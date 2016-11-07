@@ -9,10 +9,10 @@
 * Crosshair
     * https://wiki.unrealengine.com/First_Person_Shooter_C%2B%2B_Tutorial
 
-## [インプット](https://github.com/horinoh/UE4Shooter/Document/Input.md)
-## [コリジョン](https://github.com/horinoh/UE4Shooter/Document/Collision.md)
-## [キャラクタ](https://github.com/horinoh/UE4Shooter/Document/Character)
-## [アニメーション](https://github.com/horinoh/UE4Shooter/Document/Animation)
+## [インプット](https://github.com/horinoh/UE4Shooter/tree/master/Document/Input)
+## [コリジョン](https://github.com/horinoh/UE4Shooter/tree/master/Document/Collision)
+## [キャラクタ](https://github.com/horinoh/UE4Shooter/tree/master/Document/Character)
+## [アニメーション](https://github.com/horinoh/UE4Shooter/tree/master/Document/Animation)
 
 <!--
 [リンク](https://github.com/horinoh/UE4Shooter/Document/XXX.md)
