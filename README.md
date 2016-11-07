@@ -11,8 +11,8 @@
 
 ## [インプット](https://github.com/horinoh/UE4Shooter/Document/Input.md)
 ## [コリジョン](https://github.com/horinoh/UE4Shooter/Document/Collision.md)
-## [キャラクタ](https://github.com/horinoh/UE4Shooter/Document/Character/Character.md)
-## [アニメーション](https://github.com/horinoh/UE4Shooter/Document/Animation/Animation.md)
+## [キャラクタ](https://github.com/horinoh/UE4Shooter/Document/Character)
+## [アニメーション](https://github.com/horinoh/UE4Shooter/Document/Animation)
 
 <!--
 [リンク](https://github.com/horinoh/UE4Shooter/Document/XXX.md)
