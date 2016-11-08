@@ -6,6 +6,7 @@
 #include "UnrealNetwork.h"
 
 AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -31,8 +32,8 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 
 		//!< カプセルコリジョン
 		CapsuleComp->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-		//CapsuleComp->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponInstant, ECR_Ignore);
-		//CapsuleComp->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponProjectile, ECR_Block);
+		CapsuleComp->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponInstant, ECR_Ignore);
+		CapsuleComp->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponProjectile, ECR_Block);
 
 		//!< シャドウマップ視錐台をまとめる
 		//!< この設定はルートコンポーネントに対してすること
@@ -60,8 +61,8 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 		SkelMesh->SetCollisionObjectType(ECC_Pawn);
 		SkelMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		SkelMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-		//SkelMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponInstant, ECR_Block);
-		//SkelMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponProjectile, ECR_Block);
+		SkelMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponInstant, ECR_Block);
+		SkelMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponProjectile, ECR_Block);
 
 		//!< アニメーションBP
 		static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprint(TEXT("AnimBlueprint'/Game/Shooter/Animation/ABP_UE4Mannequin.ABP_UE4Mannequin'"));
