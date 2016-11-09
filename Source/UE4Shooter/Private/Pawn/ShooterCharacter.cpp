@@ -5,6 +5,9 @@
 
 #include "UnrealNetwork.h"
 
+#include "Weapon/ShooterWeapon.h"
+#include "Weapon/WeaponAssaultRifle.h"
+
 AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -42,33 +45,33 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 		CapsuleComp->bLightAttachmentsAsGroup = true;
 	}
 
-	const auto SkelMesh = GetMesh();
-	if (nullptr != SkelMesh)
+	const auto SkelMeshComp = GetMesh();
+	if (nullptr != SkelMeshComp)
 	{
 		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMesh(TEXT("SkeletalMesh'/Game/AnimStarterPack/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 		if (SkeletalMesh.Succeeded())
 		{
-			SkelMesh->SetSkeletalMesh(SkeletalMesh.Object);
+			SkelMeshComp->SetSkeletalMesh(SkeletalMesh.Object);
 		}
-		SkelMesh->SetRelativeLocationAndRotation(FVector::UpVector * -90.0f, FRotator(0.0f, -90.0f, 0.0f));
+		SkelMeshComp->SetRelativeLocationAndRotation(FVector::UpVector * -90.0f, FRotator(0.0f, -90.0f, 0.0f));
 		
 		//!< AlwaysTickPose は描画されていないと更新されないので DedicateServer では更新されない、AlwaysTickPoseAndRefreshBones にすると描画されていなくても更新される
-		SkelMesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
+		SkelMeshComp->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
 
-		SkelMesh->bReceivesDecals = false;
+		SkelMeshComp->bReceivesDecals = false;
 
 		//!< メッシュコリジョン
-		SkelMesh->SetCollisionObjectType(ECC_Pawn);
-		SkelMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		SkelMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-		SkelMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponInstant, ECR_Block);
-		SkelMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponProjectile, ECR_Block);
+		SkelMeshComp->SetCollisionObjectType(ECC_Pawn);
+		SkelMeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		SkelMeshComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+		SkelMeshComp->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponInstant, ECR_Block);
+		SkelMeshComp->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponProjectile, ECR_Block);
 
 		//!< アニメーションBP
 		static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprint(TEXT("AnimBlueprint'/Game/Shooter/Animation/ABP_UE4Mannequin.ABP_UE4Mannequin'"));
 		if (AnimBlueprint.Object)
 		{
-			SkelMesh->SetAnimInstanceClass(AnimBlueprint.Object->GetAnimBlueprintGeneratedClass());
+			SkelMeshComp->SetAnimInstanceClass(AnimBlueprint.Object->GetAnimBlueprintGeneratedClass());
 		}
 	}
 
@@ -83,6 +86,12 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 		//!< デフォルト値が false なので true にしないとしゃがめない
 		MovementComp->GetNavAgentPropertiesRef().bCanCrouch = true;
 	}
+
+	//!< インベントリ
+	DefaultInventoryClasses.AddUnique(AWeaponAssaultRifle::StaticClass());
+	//DefaultInventoryClasses.AddUnique(AWeaponPistol::StaticClass());
+	//DefaultInventoryClasses.AddUnique(AWeaponShotgun::StaticClass());
+	//DefaultInventoryClasses.AddUnique(AWeaponSniperRifle::StaticClass());
 }
 
 void AShooterCharacter::Tick( float DeltaTime )
@@ -101,6 +110,8 @@ void AShooterCharacter::PostInitializeComponents()
 			MaterialInstanceDynamics.Add(SkelMesh->CreateAndSetMaterialInstanceDynamic(i));
 		}
 	}
+
+	CreateInventory();
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -137,6 +148,12 @@ void AShooterCharacter::SetPlayerDefaults()
 void AShooterCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+}
+void AShooterCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	DestroyInventory();
 }
 
 void AShooterCharacter::MoveForward(float Value)
@@ -197,6 +214,94 @@ float AShooterCharacter::GetHealthMax() const
 	return 1.0f;
 }
 
+void AShooterCharacter::CreateInventory()
+{
+	if (HasAuthority())
+	{
+		const auto World = GetWorld();
+		if (nullptr != World)
+		{
+			for (const auto i : DefaultInventoryClasses)
+			{
+				if (nullptr != i)
+				{
+					FActorSpawnParameters Params;
+					//Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+					Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::Undefined;
+					const auto Weapon = World->SpawnActor<AShooterWeapon>(i, Params);
+					if (nullptr != Weapon)
+					{
+						//!< Instigator はこのアクタによって引き起こされるダメージの責任者
+						Weapon->Instigator = this;
+						//!< 主にレプリケーションの為にオーナを指定
+						Weapon->SetOwner(this);
+
+						Inventory.AddUnique(Weapon);
+					}
+				}
+			}
+		}
+		if (0 < Inventory.Num())
+		{
+			Equip(Inventory[0]);
+		}
+	}
+}
+void AShooterCharacter::DestroyInventory()
+{
+	if (HasAuthority())
+	{
+		//!< ケツから消すこと
+		for (auto i = Inventory.Num() - 1; i >= 0; --i)
+		{
+			const auto Weapon = Inventory[i];
+			if (nullptr != Weapon)
+			{
+				Inventory.RemoveSingle(Weapon);
+				Weapon->Destroy();
+			}
+		}
+	}
+
+}
+void AShooterCharacter::OnRep_CurrentWeapon(AShooterWeapon* LastWeapon)
+{
+	if (nullptr != LastWeapon)
+	{
+		LastWeapon->UnEquip();
+	}
+	if (nullptr != CurrentWeapon)
+	{
+		CurrentWeapon->Equip(this);
+	}
+}
+
+void AShooterCharacter::Equip(AShooterWeapon* NewWeapon)
+{
+	if (nullptr != NewWeapon)
+	{
+		if (HasAuthority())
+		{
+			auto LastWeapon = CurrentWeapon;
+			//!< CurrentWeapon はレプリケートされるので、結果的にクライアントでも OnRep_CurrentWeapon() をされる
+			CurrentWeapon = NewWeapon;
+			OnRep_CurrentWeapon(LastWeapon);
+		}
+		else
+		{
+			ServerEquip(NewWeapon);
+		}
+	}
+}
+bool AShooterCharacter::ServerEquip_Validate(AShooterWeapon* NewWeapon)
+{
+	return true;
+}
+void AShooterCharacter::ServerEquip_Implementation(AShooterWeapon* NewWeapon)
+{
+	Equip(NewWeapon);
+}
+
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -204,5 +309,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	DOREPLIFETIME_CONDITION(AShooterCharacter, Health, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AShooterCharacter, bWantsToSprint, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AShooterCharacter, bIsTargeting, COND_SkipOwner);
+
+	DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }
 

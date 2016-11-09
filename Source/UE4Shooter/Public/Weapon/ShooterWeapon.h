@@ -12,4 +12,12 @@ class UE4SHOOTER_API AShooterWeapon : public AActor
 	
 public:	
 	AShooterWeapon(const FObjectInitializer& ObjectInitializer);
+
+	virtual void Equip(APawn* NewOwner);
+	virtual void UnEquip();
+	virtual void OnEquipFinished();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SkeletalMesh)
+	USkeletalMeshComponent* SkeletalMeshComp;
 };
