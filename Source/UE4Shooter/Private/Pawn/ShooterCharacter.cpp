@@ -5,8 +5,13 @@
 
 #include "UnrealNetwork.h"
 
-#include "Weapon/ShooterWeapon.h"
+//#include "Weapon/ShooterWeapon.h"
 #include "Weapon/WeaponAssaultRifle.h"
+#include "Weapon/WeaponGrenadeLauncher.h"
+#include "Weapon/WeaponPistol.h"
+#include "Weapon/WeaponRocketLauncher.h"
+#include "Weapon/WeaponShotgun.h"
+#include "Weapon/WeaponSniperRifle.h"
 
 AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -89,9 +94,11 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 
 	//!< インベントリ
 	DefaultInventoryClasses.AddUnique(AWeaponAssaultRifle::StaticClass());
-	//DefaultInventoryClasses.AddUnique(AWeaponPistol::StaticClass());
-	//DefaultInventoryClasses.AddUnique(AWeaponShotgun::StaticClass());
-	//DefaultInventoryClasses.AddUnique(AWeaponSniperRifle::StaticClass());
+	DefaultInventoryClasses.AddUnique(AWeaponGrenadeLauncher::StaticClass());
+	DefaultInventoryClasses.AddUnique(AWeaponPistol::StaticClass());
+	DefaultInventoryClasses.AddUnique(AWeaponRocketLauncher::StaticClass());
+	DefaultInventoryClasses.AddUnique(AWeaponShotgun::StaticClass());
+	DefaultInventoryClasses.AddUnique(AWeaponSniperRifle::StaticClass());
 }
 
 void AShooterCharacter::Tick( float DeltaTime )
@@ -171,33 +178,98 @@ void AShooterCharacter::MoveRight(float Value)
 	}
 }
 
-void AShooterCharacter::StartSprint()
-{
-
-}
-void AShooterCharacter::EndSprint()
-{
-
-}
-void AShooterCharacter::StartTargeting()
-{
-
-}
-void AShooterCharacter::EndTargeting()
-{
-
-}
 void AShooterCharacter::StartFire()
 {
-
+	//if (CanFire())
+	{
+		const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
+		if (nullptr != Weapon)
+		{
+			Weapon->StartFire();
+		}
+	}
 }
 void AShooterCharacter::EndFire()
 {
-
+	const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
+	if (nullptr != Weapon)
+	{
+		Weapon->EndFire();
+	}
 }
 void AShooterCharacter::StartReload()
 {
 
+}
+
+bool AShooterCharacter::IsSprinting() const
+{
+	//!< 前方速度が無いと「走り」にはしない
+	const auto Velocity = GetVelocity();
+	return bWantsToSprint && !Velocity.IsZero() && (Velocity.GetSafeNormal2D() | GetActorForwardVector()) > FMath::Cos(FMath::DegreesToRadians(30.f));
+}
+void AShooterCharacter::SetSprint(bool bNewSprint)
+{
+	bWantsToSprint = bNewSprint;
+
+	if (false == HasAuthority())
+	{
+		ServerSetSprint(bNewSprint);
+	}
+}
+bool AShooterCharacter::ServerSetSprint_Validate(bool bNewSprint)
+{
+	return true;
+}
+void AShooterCharacter::ServerSetSprint_Implementation(bool bNewSprint)
+{
+	SetSprint(bNewSprint);
+}
+
+bool AShooterCharacter::IsTargeting() const
+{
+	return bIsTargeting;
+}
+void AShooterCharacter::SetTargeting(bool bNewTargeting)
+{
+	bIsTargeting = bNewTargeting;
+
+	if (false == HasAuthority())
+	{
+		ServerSetTargeting(bNewTargeting);
+	}
+
+	//!< #TODO エイム音 (レプリケートしていない、自分だけでいいや)
+	//const auto Weapon = Cast<AShooterWeapon_Shooting>(CurrentWeapon);
+	//if (nullptr != Weapon)
+	//{
+	//	Weapon->SimulateTargeting(bIsTargeting);
+	//}
+}
+bool AShooterCharacter::ServerSetTargeting_Validate(bool bNewTargeting)
+{
+	return true;
+}
+void AShooterCharacter::ServerSetTargeting_Implementation(bool bNewTargeting)
+{
+	SetTargeting(bNewTargeting);
+}
+
+void AShooterCharacter::UpdateAimOffset(float DeltaSeconds)
+{
+	//if (CanTargeting())
+	{
+		const auto CurrentRot = FRotator(AimOffsetPitch, AimOffsetYaw, 0.0f);
+		const auto TargetRot = GetControlRotation() - GetActorRotation();
+		const auto InterpSpeed = 15.0f;
+		const auto NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaSeconds, InterpSpeed);
+
+		if (false == bUseControllerRotationYaw)
+		{
+			AimOffsetYaw = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Yaw), -90.0f, 90.0f);
+		}
+		AimOffsetPitch = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Pitch), -90.0f, 90.0f);
+	}
 }
 
 float AShooterCharacter::GetHealthMax() const
@@ -226,7 +298,6 @@ void AShooterCharacter::CreateInventory()
 				if (nullptr != i)
 				{
 					FActorSpawnParameters Params;
-					//Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 					Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::Undefined;
 					const auto Weapon = World->SpawnActor<AShooterWeapon>(i, Params);
 					if (nullptr != Weapon)
@@ -270,9 +341,9 @@ void AShooterCharacter::OnRep_CurrentWeapon(AShooterWeapon* LastWeapon)
 	{
 		LastWeapon->UnEquip();
 	}
-	if (nullptr != CurrentWeapon)
+	if (nullptr != GetWeapon())
 	{
-		CurrentWeapon->Equip(this);
+		GetWeapon()->Equip(this);
 	}
 }
 
@@ -282,7 +353,7 @@ void AShooterCharacter::Equip(AShooterWeapon* NewWeapon)
 	{
 		if (HasAuthority())
 		{
-			auto LastWeapon = CurrentWeapon;
+			auto LastWeapon = GetWeapon();
 			//!< CurrentWeapon はレプリケートされるので、結果的にクライアントでも OnRep_CurrentWeapon() をされる
 			CurrentWeapon = NewWeapon;
 			OnRep_CurrentWeapon(LastWeapon);
@@ -293,6 +364,34 @@ void AShooterCharacter::Equip(AShooterWeapon* NewWeapon)
 		}
 	}
 }
+void AShooterCharacter::Equip(const int32 Index)
+{
+	//if (CanEquip())
+	{
+		const auto Num = Inventory.Num();
+		if (1 < Num && Index < Num)
+		{
+			auto NextWeapon = Inventory[Index];
+			if (CurrentWeapon != NextWeapon)
+			{
+				Equip(NextWeapon);
+			}
+		}
+	}
+}
+void AShooterCharacter::EquipPrev()
+{
+	const auto Num = Inventory.Num();
+	const auto Index = Inventory.IndexOfByKey(CurrentWeapon);
+	Equip(INDEX_NONE == Index ? 0 : ((Index - 1 + Num) % Num));
+}
+void AShooterCharacter::EquipNext()
+{
+	const auto Num = Inventory.Num();
+	const auto Index = Inventory.IndexOfByKey(CurrentWeapon);
+	Equip(INDEX_NONE == Index ? 0 : ((Index + 1 + Num) % Num));
+}
+
 bool AShooterCharacter::ServerEquip_Validate(AShooterWeapon* NewWeapon)
 {
 	return true;
@@ -309,6 +408,8 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	DOREPLIFETIME_CONDITION(AShooterCharacter, Health, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AShooterCharacter, bWantsToSprint, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AShooterCharacter, bIsTargeting, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AShooterCharacter, AimOffsetYaw, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AShooterCharacter, AimOffsetPitch, COND_SkipOwner);
 
 	DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }

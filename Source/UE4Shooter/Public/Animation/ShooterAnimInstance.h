@@ -21,19 +21,19 @@ class UE4SHOOTER_API UShooterAnimInstance : public UAnimInstance
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UFUNCTION()
-	bool ShouldCrouch() const { return IsCrouching && !IsTargeting; }
+	FORCEINLINE bool ShouldCrouch() const { return IsCrouching && !IsTargeting; }
 	UFUNCTION()
-	bool ShouldStand() const { return !IsCrouching && !IsSprinting && !IsTargeting && !IsFalling; }
+	FORCEINLINE bool ShouldStand() const { return !IsCrouching && !IsSprinting && !IsTargeting && !IsFalling; }
 	UFUNCTION()
-	bool ShouldJumpStart() const { return IsFalling; }
+	FORCEINLINE bool ShouldJumpStart() const { return IsFalling; }
 	UFUNCTION()
-	bool ShouldJumpLoop() const { return IsFalling; }
+	FORCEINLINE bool ShouldJumpLoop() const { return IsFalling; }
 	UFUNCTION()
-	bool ShouldJumpEnd() const { return !IsFalling; }
+	FORCEINLINE bool ShouldJumpEnd() const { return !IsFalling; }
 	UFUNCTION()
-	bool ShouldSprint() const { return IsSprinting; }
+	FORCEINLINE bool ShouldSprint() const { return IsSprinting; }
 	UFUNCTION()
-	bool ShouldTargeting() const { return IsTargeting; }
+	FORCEINLINE bool ShouldTargeting() const { return IsTargeting; }
 
 	UFUNCTION()
 	void StandEntered(const FAnimNode_StateMachine& Machine, int32 PrevStateIndex, int32 NextStateIndex) {}

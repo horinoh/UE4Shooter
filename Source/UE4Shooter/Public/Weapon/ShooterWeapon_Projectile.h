@@ -12,4 +12,7 @@ UCLASS(Abstract)
 class UE4SHOOTER_API AShooterWeapon_Projectile : public AShooterWeapon
 {
 	GENERATED_BODY()
+
+	//!< AShooterWeapon
+	virtual void Fire() override {}
 };

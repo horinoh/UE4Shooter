@@ -3,6 +3,10 @@
 #include "UE4Shooter.h"
 #include "ShooterWeapon.h"
 
+#include "UnrealNetwork.h"
+#include "Animation/AnimMontage.h"
+#include "Animation/AnimInstance.h"
+
 AShooterWeapon::AShooterWeapon(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -34,6 +38,13 @@ AShooterWeapon::AShooterWeapon(const FObjectInitializer& ObjectInitializer)
 
 		SetRootComponent(SkeletalMeshComp);
 	}
+
+	//!< クロスヘアテクスチャ
+	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairT2D(TEXT("Texture2D'/Game/Crosshair_fps_tutorial/crosshair.crosshair'"));
+	if (CrosshairT2D.Succeeded())
+	{
+		CrosshairTexture = CrosshairT2D.Object;
+	}
 }
 
 void AShooterWeapon::Equip(APawn* NewOwner)
@@ -59,9 +70,6 @@ void AShooterWeapon::Equip(APawn* NewOwner)
 }
 void AShooterWeapon::UnEquip()
 {
-	//!< #TODO
-	//GetWorldTimerManager().ClearTimer(TimerHandle_EquipFinished);
-
 	if (nullptr != SkeletalMeshComp)
 	{
 		//!< SetHiddenInGame() はレプリケートされないのでクライアントでもコールする必要がある
@@ -70,8 +78,13 @@ void AShooterWeapon::UnEquip()
 		//!< DetachFromParent() はレプリケートされるが(遅れるのが嫌なので)クライアントでもコールしている
 		SkeletalMeshComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	}
-}
 
+	//!< #TODO
+	GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
+	//GetWorldTimerManager().ClearTimer(TimerHandle_EquipFinished);
+
+	EndFire();
+}
 void AShooterWeapon::OnEquipFinished()
 {
 	if (nullptr != SkeletalMeshComp)
@@ -92,3 +105,164 @@ void AShooterWeapon::OnEquipFinished()
 	}
 }
 
+void AShooterWeapon::StartFire()
+{
+	if (!bWantsToFire)
+	{
+		bWantsToFire = true;
+	}
+
+	//!< #TODO 弾があれば
+	if (true)
+	{
+		HandleFiring();
+	}
+	else
+	{
+		//Reload();
+	}
+}
+void AShooterWeapon::StartSimulateFire()
+{
+	//!< オーナーのアニメーション
+	const auto Character = Cast<ACharacter>(GetOwner());
+	if (nullptr != Character)
+	{
+		if (nullptr != OwnerFireAnimMontage)
+		{
+			const auto SectionName = FName(TEXT("Default"));
+			Character->PlayAnimMontage(OwnerFireAnimMontage, 1.0f, SectionName);
+		}
+	}
+
+	//!< 武器のアニメーション (サウンド、エフェクト付き)
+	if (nullptr != SkeletalMeshComp)
+	{
+		const auto AnimInst = SkeletalMeshComp->GetAnimInstance();
+		if (nullptr != AnimInst)
+		{
+			if (nullptr != FireAnimSequence)
+			{
+				AnimInst->PlaySlotAnimationAsDynamicMontage(FireAnimSequence, TEXT("DefaultSlot"));
+			}
+		}
+	}
+}
+void AShooterWeapon::EndFire()
+{
+	if (bWantsToFire)
+	{
+		bWantsToFire = false;
+	}
+
+	BurstCounter = 0;
+
+	if (false == HasAuthority())
+	{
+		const auto Pawn = Cast<APawn>(GetOwner());
+		if (nullptr != Pawn && Pawn->IsLocallyControlled())
+		{
+			ServerEndFire();
+		}
+	}
+}
+void AShooterWeapon::EndSimulateFire()
+{
+	const auto Character = Cast<ACharacter>(GetOwner());
+	if (nullptr != Character)
+	{
+		if (nullptr != OwnerFireAnimMontage)
+		{
+			Character->StopAnimMontage(OwnerFireAnimMontage);
+		}
+	}
+}
+void AShooterWeapon::HandleFiring()
+{
+	if (false == HasAuthority())
+	{
+		if (bWantsToFire)
+		{
+			const auto Pawn = Cast<APawn>(GetOwner());
+			if (nullptr != Pawn && Pawn->IsLocallyControlled())
+			{
+				Fire();
+				StartSimulateFire();
+				RepeatFiring();
+			}
+
+			//!< サーバへ発砲させる
+			ServerHandleFiring();
+		}
+		else
+		{
+			//!< サーバへ発砲やめさせる
+			EndSimulateFire();
+			GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
+		}
+	}
+	else
+	{
+		//!< サーバ側は BurstCounter を更新する → クライアントで OnRep_BurstCounter()
+		++BurstCounter;
+	}
+}
+void AShooterWeapon::RepeatFiring()
+{
+	const auto Character = Cast<ACharacter>(GetOwner());
+	if (nullptr != Character)
+	{
+		const auto SkelMesh = Character->GetMesh();
+		if (nullptr != SkelMesh)
+		{
+			const auto AnimInst = SkelMesh->GetAnimInstance();
+			if (nullptr != AnimInst)
+			{
+				const auto SectionName = AnimInst->Montage_GetCurrentSection();
+				if (nullptr != OwnerFireAnimMontage)
+				{
+					const auto SectionIndex = OwnerFireAnimMontage->GetSectionIndex(SectionName);
+					const auto Duration = OwnerFireAnimMontage->GetSectionLength(SectionIndex);
+					GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &AShooterWeapon::HandleFiring, Duration, false);
+				}
+			}
+		}
+	}
+}
+
+bool AShooterWeapon::ServerEndFire_Validate()
+{
+	return true;
+}
+void AShooterWeapon::ServerEndFire_Implementation()
+{
+	EndFire();
+}
+
+bool AShooterWeapon::ServerHandleFiring_Validate()
+{
+	return true;
+}
+void AShooterWeapon::ServerHandleFiring_Implementation()
+{
+	HandleFiring();
+}
+
+void AShooterWeapon::OnRep_BurstCounter()
+{
+	if (0 < BurstCounter)
+	{
+		StartSimulateFire();
+	}
+	else
+	{
+		EndSimulateFire();
+	}
+}
+
+void AShooterWeapon::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AShooterWeapon, BurstCounter, COND_SkipOwner);
+}

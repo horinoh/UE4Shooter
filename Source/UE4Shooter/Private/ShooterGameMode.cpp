@@ -5,10 +5,12 @@
 
 #include "Pawn/ShooterCharacter.h"
 #include "Player/ShooterPlayerController.h"
+#include "UI/ShooterHUD.h"
 
 AShooterGameMode::AShooterGameMode()
 	: Super()
 {
 	DefaultPawnClass = AShooterCharacter::StaticClass();
 	PlayerControllerClass = AShooterPlayerController::StaticClass();
+	HUDClass = AShooterHUD::StaticClass();
 }

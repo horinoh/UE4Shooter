@@ -28,17 +28,35 @@ public:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
-	void StartJump() { Jump(); }
-	void EndJump() { StopJumping(); }
-	void StartCrouch() { Crouch(); }
-	void EndCrouch() { UnCrouch(); }
-	void StartSprint();
-	void EndSprint();
-	void StartTargeting();
-	void EndTargeting();
+	FORCEINLINE void StartJump() { Jump(); }
+	FORCEINLINE void EndJump() { StopJumping(); }
+	FORCEINLINE void StartCrouch() { Crouch(); }
+	FORCEINLINE void EndCrouch() { UnCrouch(); }
+	FORCEINLINE void StartSprint() { SetSprint(true); }
+	FORCEINLINE void EndSprint() { SetSprint(false); }
+	FORCEINLINE void StartTargeting() { SetTargeting(true); }
+	FORCEINLINE void EndTargeting() { SetTargeting(false); }
 	void StartFire();
 	void EndFire();
 	void StartReload();
+
+	bool IsSprinting() const;
+	void SetSprint(bool bNewSprint);
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSetSprint(bool bNewSprint);
+	virtual bool ServerSetSprint_Validate(bool bNewSprint);
+	virtual void ServerSetSprint_Implementation(bool bNewSprint);
+
+	bool IsTargeting() const;
+	void SetTargeting(bool bNewTargeting);
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSetTargeting(bool bNewTargeting);
+	virtual bool ServerSetTargeting_Validate(bool bNewTargeting);
+	virtual void ServerSetTargeting_Implementation(bool bNewTargeting);
+
+	void UpdateAimOffset(float DeltaSeconds);
+	FORCEINLINE float GetAimOffsetYaw() const { return AimOffsetYaw; }
+	FORCEINLINE float GetAimOffsetPitch() const { return AimOffsetPitch; }
 
 	float GetHealthMax() const;
 
@@ -47,10 +65,15 @@ public:
 	UFUNCTION()
 	void OnRep_CurrentWeapon(AShooterWeapon* LastWeapon);
 	void Equip(AShooterWeapon* NewWeapon);
+	void Equip(const int32 Index);
+	void EquipPrev();
+	void EquipNext();
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerEquip(AShooterWeapon* NewWeapon);
 	virtual bool ServerEquip_Validate(AShooterWeapon* NewWeapon);
 	virtual void ServerEquip_Implementation(AShooterWeapon* NewWeapon);
+
+	FORCEINLINE AShooterWeapon* GetWeapon() const { return CurrentWeapon; }
 
 protected:
 
@@ -68,6 +91,10 @@ protected:
 	uint8 bWantsToSprint : 1;
 	UPROPERTY(Transient, Replicated)
 	uint8 bIsTargeting : 1;
+	UPROPERTY(Transient, Replicated)
+	float AimOffsetYaw;
+	UPROPERTY(Transient, Replicated)
+	float AimOffsetPitch;
 
 	UPROPERTY(EditDefaultsOnly, Category = Inventory)
 	TArray<TSubclassOf<AShooterWeapon>> DefaultInventoryClasses;
