@@ -58,5 +58,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	UAnimMontage* OwnerFireAnimMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	UAnimMontage* OwnerReloadAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	UAnimMontage* OwnerEquipAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	UAnimSequence* FireAnimSequence;
 };

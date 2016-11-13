@@ -4,12 +4,14 @@
 #include "WeaponSniperRifle.h"
 
 #include "Animation/AnimSequence.h"
+#include "Animation/AnimMontage.h"
 
 AWeaponSniperRifle::AWeaponSniperRifle(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	if (nullptr != SkeletalMeshComp)
 	{
+		//!< メッシュ
 		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SM(TEXT("SkeletalMesh'/Game/PrototypeWeap/Prototype_SniperRifle.Prototype_SniperRifle'"));
 		if (SM.Succeeded())
 		{
@@ -24,11 +26,23 @@ AWeaponSniperRifle::AWeaponSniperRifle(const FObjectInitializer& ObjectInitializ
 		}
 	}
 
-	//static ConstructorHelpers::FObjectFinder<UAnimMontage> FireAM(TEXT(""));
-	//if (FireAM.Succeeded())
-	//{
-	//	OwnerFireAnimMontage = FireAM.Object;
-	//}
+	//!< オーナーのアニメーション
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> FireAM(TEXT("AnimMontage'/Game/Shooter/Animation/Montage/Fire/AM_Fire_Rifle.AM_Fire_Rifle'")); //!< ライフル流用
+	if (FireAM.Succeeded())
+	{
+		OwnerFireAnimMontage = FireAM.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadAM(TEXT("AnimMontage'/Game/Shooter/Animation/Montage/Reload/AM_Reload_Rifle.AM_Reload_Rifle'")); //!< ライフル流用
+	if (ReloadAM.Succeeded())
+	{
+		OwnerReloadAnimMontage = ReloadAM.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipAM(TEXT("AnimMontage'/Game/Shooter/Animation/Montage/Equip/AM_Equip_Rifle.AM_Equip_Rifle'")); //!< ライフル流用
+	if (EquipAM.Succeeded())
+	{
+		OwnerEquipAnimMontage = EquipAM.Object;
+	}
+	//!< 武器のアニメーション
 	static ConstructorHelpers::FObjectFinder<UAnimSequence> FireAS(TEXT("AnimSequence'/Game/PrototypeWeap/Anims/Fire_SniperRifle_W.Fire_SniperRifle_W'"));
 	if (FireAS.Succeeded())
 	{

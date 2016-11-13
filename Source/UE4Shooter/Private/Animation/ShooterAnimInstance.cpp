@@ -63,14 +63,13 @@ void UShooterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		const auto ShooterCharacter = Cast<AShooterCharacter>(PawnOwner);
 		if (nullptr != ShooterCharacter)
 		{
-			ShooterCharacter->UpdateAimOffset(DeltaSeconds);
-
 			//!< 走り
 			IsSprinting = ShooterCharacter->IsSprinting();
 			//!< エイム
 			IsTargeting = ShooterCharacter->IsTargeting();
 
 			//!< エイムオフセット
+			ShooterCharacter->UpdateAimOffset(DeltaSeconds);
 			const auto InterpSpeed = 15.0f;
 			AimOffsetYaw = FMath::FInterpTo(AimOffsetYaw, ShooterCharacter->GetAimOffsetYaw(), DeltaSeconds, InterpSpeed);
 			AimOffsetPitch = FMath::FInterpTo(AimOffsetPitch, ShooterCharacter->GetAimOffsetPitch(), DeltaSeconds, InterpSpeed);

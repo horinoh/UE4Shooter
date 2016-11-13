@@ -257,18 +257,21 @@ void AShooterCharacter::ServerSetTargeting_Implementation(bool bNewTargeting)
 
 void AShooterCharacter::UpdateAimOffset(float DeltaSeconds)
 {
-	//if (CanTargeting())
+	if (IsLocallyControlled())
 	{
-		const auto CurrentRot = FRotator(AimOffsetPitch, AimOffsetYaw, 0.0f);
-		const auto TargetRot = GetControlRotation() - GetActorRotation();
-		const auto InterpSpeed = 15.0f;
-		const auto NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaSeconds, InterpSpeed);
-
-		if (false == bUseControllerRotationYaw)
+		//if (CanTargeting())
 		{
-			AimOffsetYaw = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Yaw), -90.0f, 90.0f);
+			const auto CurrentRot = FRotator(AimOffsetPitch, AimOffsetYaw, 0.0f);
+			const auto TargetRot = GetControlRotation() - GetActorRotation();
+			const auto InterpSpeed = 15.0f;
+			const auto NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaSeconds, InterpSpeed);
+
+			if (false == bUseControllerRotationYaw)
+			{
+				AimOffsetYaw = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Yaw), -90.0f, 90.0f);
+			}
+			AimOffsetPitch = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Pitch), -90.0f, 90.0f);
 		}
-		AimOffsetPitch = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Pitch), -90.0f, 90.0f);
 	}
 }
 

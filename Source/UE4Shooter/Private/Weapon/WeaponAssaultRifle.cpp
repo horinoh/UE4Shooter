@@ -27,10 +27,20 @@ AWeaponAssaultRifle::AWeaponAssaultRifle(const FObjectInitializer& ObjectInitial
 	}
 
 	//!< オーナーのアニメーション
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> FireAM(TEXT("AnimMontage'/Game/Shooter/Animation/Montage/AM_Fire_AssaultRifle.AM_Fire_AssaultRifle'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> FireAM(TEXT("AnimMontage'/Game/Shooter/Animation/Montage/Fire/AM_Fire_Rifle.AM_Fire_Rifle'"));
 	if (FireAM.Succeeded())
 	{
 		OwnerFireAnimMontage = FireAM.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadAM(TEXT("AnimMontage'/Game/Shooter/Animation/Montage/Reload/AM_Reload_Rifle.AM_Reload_Rifle'"));
+	if (ReloadAM.Succeeded())
+	{
+		OwnerReloadAnimMontage = ReloadAM.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipAM(TEXT("AnimMontage'/Game/Shooter/Animation/Montage/Equip/AM_Equip_Rifle.AM_Equip_Rifle'"));
+	if (EquipAM.Succeeded())
+	{
+		OwnerEquipAnimMontage = EquipAM.Object;
 	}
 	//!< 武器のアニメーション
 	static ConstructorHelpers::FObjectFinder<UAnimSequence> FireAS(TEXT("AnimSequence'/Game/PrototypeWeap/Anims/Fire_Rifle_W.Fire_Rifle_W'"));
