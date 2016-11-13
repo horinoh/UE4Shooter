@@ -5,7 +5,6 @@
 
 #include "UnrealNetwork.h"
 
-//#include "Weapon/ShooterWeapon.h"
 #include "Weapon/WeaponAssaultRifle.h"
 #include "Weapon/WeaponGrenadeLauncher.h"
 #include "Weapon/WeaponPistol.h"
@@ -271,8 +270,19 @@ void AShooterCharacter::UpdateAimOffset(float DeltaSeconds)
 				AimOffsetYaw = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Yaw), -90.0f, 90.0f);
 			}
 			AimOffsetPitch = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Pitch), -90.0f, 90.0f);
+
+			ServerSetAimOffset(AimOffsetYaw, AimOffsetPitch);
 		}
 	}
+}
+bool AShooterCharacter::ServerSetAimOffset_Validate(float Yaw, float Pitch)
+{
+	return true;
+}
+void AShooterCharacter::ServerSetAimOffset_Implementation(float Yaw, float Pitch)
+{
+	AimOffsetYaw = Yaw;
+	AimOffsetPitch = Pitch;
 }
 
 float AShooterCharacter::GetHealthMax() const

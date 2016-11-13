@@ -57,6 +57,10 @@ public:
 	void UpdateAimOffset(float DeltaSeconds);
 	FORCEINLINE float GetAimOffsetYaw() const { return AimOffsetYaw; }
 	FORCEINLINE float GetAimOffsetPitch() const { return AimOffsetPitch; }
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSetAimOffset(float Yaw, float Pitch);
+	virtual bool ServerSetAimOffset_Validate(float Yaw, float Pitch);
+	virtual void ServerSetAimOffset_Implementation(float Yaw, float Pitch);
 
 	float GetHealthMax() const;
 
