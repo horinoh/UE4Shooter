@@ -23,7 +23,7 @@
         * 出力を Layered blend per bone の Blend Poses0 へ接続
         * Slot Name を UpperBody へ変更 (UpperBody スロットが無い場合は追加する)
 
-![画像](AnimBP_LayeredBLend.png)
+![画像](AnimBP_LayeredBlend.png)
 
 * エイムオフセット
     * AnimGraph 内で New Saved cache pose ノードを作成(SavedPose1)、入力に Layered blend per bone の出力を接続
