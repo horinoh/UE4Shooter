@@ -6,6 +6,8 @@
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimMontage.h"
 
+#include "Projectile_GrenadeLauncher.h"
+
 AWeaponGrenadeLauncher::AWeaponGrenadeLauncher(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -48,4 +50,7 @@ AWeaponGrenadeLauncher::AWeaponGrenadeLauncher(const FObjectInitializer& ObjectI
 	{
 		FireAnimSequence = FireAS.Object;
 	}
+
+	//!< プロジェクタイルクラス
+	ProjectileClass = AProjectile_GrenadeLauncher::StaticClass();
 }

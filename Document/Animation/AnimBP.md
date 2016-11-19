@@ -1,14 +1,20 @@
-# アニメーションBP
+﻿# アニメーションBP
 
 ## ABP_UE4Mannequin を作成
 
 * AnimGraph にステートマシン(Locomotion)を作成
 * ステートを追加、接続を行う (条件式はC++からやるので書かない)
-    * Stand ... BS_Stand をアサイン、Speed, Direction を接続 
-        * (変数はShow Inherited Variablesにチェックを入れないと出てこないので注意)
-    * Crouch ... BS_Crouch をアサイン、Speed, Direction を接続
-    * JumpStart, JumpLoop, JumpEnd
-    * Sprint
+	* Stand
+		* BS_Stand をアサイン
+		* Speed, Direction を接続 
+			* 変数はShow Inherited Variablesにチェックを入れないと出てこないので注意
+	* Crouch
+		* BS_Crouch をアサイン
+		* Speed, Direction を接続
+	* JumpStart, JumpLoop, JumpEnd
+		* Jump/Stand/Jump_Start, Jump_Loop, Jump_End をアサイン
+		* Jog や Ironsights からのジャンプはまだ未対応
+	* Sprint ... Sprint_Fwd_Rifle をアサイン
 
 ![画像](AnimBP_StateMachine.png)
 

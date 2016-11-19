@@ -54,10 +54,12 @@ public:
 	virtual bool ServerSetTargeting_Validate(bool bNewTargeting);
 	virtual void ServerSetTargeting_Implementation(bool bNewTargeting);
 
+	FORCEINLINE float GetSpeedScale() const { return (IsSprinting() ? 1.5f : 1.0f) * (IsTargeting() ? 0.75f : 1.0f); }
+
 	void UpdateAimOffset(float DeltaSeconds);
 	FORCEINLINE float GetAimOffsetYaw() const { return AimOffsetYaw; }
 	FORCEINLINE float GetAimOffsetPitch() const { return AimOffsetPitch; }
-	UFUNCTION(Reliable, Server, WithValidation)
+	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetAimOffset(float Yaw, float Pitch);
 	virtual bool ServerSetAimOffset_Validate(float Yaw, float Pitch);
 	virtual void ServerSetAimOffset_Implementation(float Yaw, float Pitch);

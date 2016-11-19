@@ -2,3 +2,8 @@
 
 #include "UE4Shooter.h"
 #include "ShooterWeapon_Instant.h"
+
+void AShooterWeapon_Instant::Fire()
+{
+
+}

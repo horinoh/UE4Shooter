@@ -19,6 +19,7 @@ public:
 
 	FORCEINLINE UTexture2D* GetCrosshairTexture() const { return CrosshairTexture; }
 
+	virtual FVector GetMuzzleLocation() const;
 	virtual void Fire() PURE_VIRTUAL(AShooterWeapon::Fire, );
 	
 	virtual void StartFire();

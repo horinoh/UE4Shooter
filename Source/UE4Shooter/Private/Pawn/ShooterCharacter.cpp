@@ -5,6 +5,8 @@
 
 #include "UnrealNetwork.h"
 
+#include "ShooterCharaMovementComponent.h"
+
 #include "Weapon/WeaponAssaultRifle.h"
 #include "Weapon/WeaponGrenadeLauncher.h"
 #include "Weapon/WeaponPistol.h"
@@ -13,7 +15,7 @@
 #include "Weapon/WeaponSniperRifle.h"
 
 AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterCharaMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -92,8 +94,10 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 	}
 
 	//!< ƒCƒ“ƒxƒ“ƒgƒŠ
-	DefaultInventoryClasses.AddUnique(AWeaponAssaultRifle::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponGrenadeLauncher::StaticClass());
+
+	DefaultInventoryClasses.AddUnique(AWeaponAssaultRifle::StaticClass());
+	//	DefaultInventoryClasses.AddUnique(AWeaponGrenadeLauncher::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponPistol::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponRocketLauncher::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponShotgun::StaticClass());
@@ -270,7 +274,7 @@ void AShooterCharacter::UpdateAimOffset(float DeltaSeconds)
 				AimOffsetYaw = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Yaw), -90.0f, 90.0f);
 			}
 			AimOffsetPitch = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Pitch), -90.0f, 90.0f);
-
+			
 			ServerSetAimOffset(AimOffsetYaw, AimOffsetPitch);
 		}
 	}

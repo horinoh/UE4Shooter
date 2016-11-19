@@ -98,6 +98,11 @@ void AShooterWeapon::OnEquipFinished()
 			const auto OwnerSkelMeshComp = Character->GetMesh();
 			if (nullptr != OwnerSkelMeshComp)
 			{
+				if (nullptr == SkeletalMeshComp->GetSocketByName(TEXT("weapon_r")))
+				{
+					UE_LOG(LogShooter, Warning, TEXT("Socket weapon_r not found"));
+				}
+
 				//!< AttachTo(), SnapTo() はレプリケートされるが(遅れるのが嫌なので)クライアントでもコールしている
 				SkeletalMeshComp->SnapTo(OwnerSkelMeshComp, TEXT("weapon_r"));
 			}
@@ -105,6 +110,15 @@ void AShooterWeapon::OnEquipFinished()
 	}
 }
 
+FVector AShooterWeapon::GetMuzzleLocation() const
+{
+	if (nullptr != SkeletalMeshComp)
+	{
+		//!< ProrotypeWeapon メッシュは MuzzleFlash ソケットを持っている
+		return SkeletalMeshComp->GetSocketLocation(TEXT("MuzzleFlash"));
+	}
+	return FVector::ZeroVector;
+}
 void AShooterWeapon::StartFire()
 {
 	if (!bWantsToFire)
@@ -181,24 +195,29 @@ void AShooterWeapon::HandleFiring()
 {
 	if (false == HasAuthority())
 	{
-		if (bWantsToFire)
+		//!< ローカルコントロールの場合
+		const auto Pawn = Cast<APawn>(GetOwner());
+		if (nullptr != Pawn && Pawn->IsLocallyControlled())
 		{
-			const auto Pawn = Cast<APawn>(GetOwner());
-			if (nullptr != Pawn && Pawn->IsLocallyControlled())
+			if (bWantsToFire)
 			{
+				//!< Fire() は派生クラス毎に独自実装する
 				Fire();
+
 				StartSimulateFire();
 				RepeatFiring();
 			}
-
-			//!< サーバへ発砲させる
-			ServerHandleFiring();
+			else
+			{
+				EndSimulateFire();
+				GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
+			}
 		}
-		else
-		{
-			//!< サーバへ発砲やめさせる
-			EndSimulateFire();
-			GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
+
+		//!< サーバへ発砲させる
+		if (bWantsToFire)
+		{	
+			ServerHandleFiring();
 		}
 	}
 	else

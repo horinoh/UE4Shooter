@@ -13,6 +13,7 @@ class UE4SHOOTER_API AShooterWeapon_Instant : public AShooterWeapon
 {
 	GENERATED_BODY()
 
+public:
 	//!< AShooterWeapon
-	virtual void Fire() override {}
+	virtual void Fire() override;
 };
