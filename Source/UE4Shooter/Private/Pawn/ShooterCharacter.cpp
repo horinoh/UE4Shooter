@@ -94,10 +94,8 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 	}
 
 	//!< ƒCƒ“ƒxƒ“ƒgƒŠ
-	DefaultInventoryClasses.AddUnique(AWeaponGrenadeLauncher::StaticClass());
-
 	DefaultInventoryClasses.AddUnique(AWeaponAssaultRifle::StaticClass());
-	//	DefaultInventoryClasses.AddUnique(AWeaponGrenadeLauncher::StaticClass());
+	DefaultInventoryClasses.AddUnique(AWeaponGrenadeLauncher::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponPistol::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponRocketLauncher::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponShotgun::StaticClass());

@@ -19,7 +19,12 @@ public:
 
 	FORCEINLINE UTexture2D* GetCrosshairTexture() const { return CrosshairTexture; }
 
+	FORCEINLINE virtual float GetSpreadAngle() const { return 0.0f; }
+	FORCEINLINE virtual int32 GetSpreadNum() const { return 1; }
+	FORCEINLINE virtual float GetRangeDistance() const { return 10000.0f; }
 	virtual FVector GetMuzzleLocation() const;
+	virtual void GetAim(FVector& Start, FVector& Direction) const;
+	virtual bool LineTraceWeapon(const FVector& Start, const FVector& End, FHitResult& HitResult) const;
 	virtual void Fire() PURE_VIRTUAL(AShooterWeapon::Fire, );
 	
 	virtual void StartFire();

@@ -6,6 +6,7 @@
 #include "UnrealNetwork.h"
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimInstance.h"
+#include "AIController.h"
 
 AShooterWeapon::AShooterWeapon(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -98,11 +99,6 @@ void AShooterWeapon::OnEquipFinished()
 			const auto OwnerSkelMeshComp = Character->GetMesh();
 			if (nullptr != OwnerSkelMeshComp)
 			{
-				if (nullptr == SkeletalMeshComp->GetSocketByName(TEXT("weapon_r")))
-				{
-					UE_LOG(LogShooter, Warning, TEXT("Socket weapon_r not found"));
-				}
-
 				//!< AttachTo(), SnapTo() はレプリケートされるが(遅れるのが嫌なので)クライアントでもコールしている
 				SkeletalMeshComp->SnapTo(OwnerSkelMeshComp, TEXT("weapon_r"));
 			}
@@ -118,6 +114,53 @@ FVector AShooterWeapon::GetMuzzleLocation() const
 		return SkeletalMeshComp->GetSocketLocation(TEXT("MuzzleFlash"));
 	}
 	return FVector::ZeroVector;
+}
+
+void AShooterWeapon::GetAim(FVector& Start, FVector& Direction) const
+{
+	if (nullptr != Instigator)
+	{
+		const auto PC = Cast<APlayerController>(Instigator->GetController());
+		if (nullptr != PC)
+		{
+			FRotator Rot;
+			PC->GetPlayerViewPoint(Start, Rot);
+			Direction = Rot.Vector();
+		}
+		else
+		{
+			Start = GetMuzzleLocation();
+			const auto AC = Cast<AAIController>(Instigator->GetController());
+			if (nullptr != AC)
+			{
+				Direction = AC->GetControlRotation().Vector();
+			}
+			else
+			{
+				Direction = Instigator->GetBaseAimRotation().Vector();
+			}
+		}
+	}
+}
+
+bool AShooterWeapon::LineTraceWeapon(const FVector& Start, const FVector& End, FHitResult& HitResult) const
+{
+	const auto World = GetWorld();
+	if (nullptr != World)
+	{
+		FCollisionQueryParams Params(TEXT("FireTag"), true, Instigator);
+		Params.bTraceAsyncScene = true;
+		Params.bReturnPhysicalMaterial = true;
+		if (World->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel_WeaponInstant, Params))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return false;
 }
 void AShooterWeapon::StartFire()
 {
@@ -193,7 +236,12 @@ void AShooterWeapon::EndSimulateFire()
 }
 void AShooterWeapon::HandleFiring()
 {
-	if (false == HasAuthority())
+	if (HasAuthority())
+	{
+		//!< サーバ側は BurstCounter を更新する → クライアントで OnRep_BurstCounter()
+		++BurstCounter;
+	} 
+	else
 	{
 		//!< ローカルコントロールの場合
 		const auto Pawn = Cast<APawn>(GetOwner());
@@ -219,11 +267,6 @@ void AShooterWeapon::HandleFiring()
 		{	
 			ServerHandleFiring();
 		}
-	}
-	else
-	{
-		//!< サーバ側は BurstCounter を更新する → クライアントで OnRep_BurstCounter()
-		++BurstCounter;
 	}
 }
 void AShooterWeapon::RepeatFiring()

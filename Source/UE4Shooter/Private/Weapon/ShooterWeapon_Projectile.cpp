@@ -3,46 +3,30 @@
 #include "UE4Shooter.h"
 #include "ShooterWeapon_Projectile.h"
 
-#include "AIController.h"
-
 void AShooterWeapon_Projectile::Fire()
 {
-	FVector Start;
-	FVector Direction;
-	if (nullptr != Instigator)
-	{
-		const auto PC = Cast<APlayerController>(Instigator->GetController());
-		if (nullptr != PC)
-		{
-			FRotator Rot;
-			PC->GetPlayerViewPoint(Start, Rot);
-			Direction = Rot.Vector();
-		}
-		else
-		{
-			Start = GetMuzzleLocation();
-			const auto AC = Cast<AAIController>(Instigator->GetController());
-			if (nullptr != AC)
-			{
-				Direction = AC->GetControlRotation().Vector();
-			}
-			else
-			{
-				Direction = Instigator->GetBaseAimRotation().Vector();
-			}
-		}
-	}
-	const auto End = Start + 10000.0f * Direction;
+	const auto RandomSeed = FMath::Rand();
+	auto RandomStream = FRandomStream(RandomSeed);
 
-	//FHitResult HitResult(ForceInit);
-	//if (TraceFire(Start, End, HitResult))
-	//{
-	//	ServerSpawnProjectile(Origin, (HitResult.ImpactPoint - Origin).GetSafeNormal());
-	//}
-	//else
-	//{
-	ServerSpawnProjectile(GetMuzzleLocation(), Direction);
-	//}
+	const auto SpreadAngle = GetSpreadAngle();
+	const auto ConeHalfRadian = FMath::DegreesToRadians(SpreadAngle * 0.5f);
+	const auto RangeDistance = GetRangeDistance();
+
+	FVector Start, Direction;
+	GetAim(Start, Direction);
+	const auto MuzzleLocation = GetMuzzleLocation();
+
+	const auto SpreadDirection = RandomStream.VRandCone(Direction, ConeHalfRadian, ConeHalfRadian);
+	const auto End = Start + RangeDistance * SpreadDirection;
+	FHitResult HitResult(ForceInit);
+	if (LineTraceWeapon(Start, End, HitResult))
+	{
+		ServerSpawnProjectile(MuzzleLocation, (HitResult.ImpactPoint - MuzzleLocation).GetSafeNormal());
+	}
+	else
+	{
+		ServerSpawnProjectile(MuzzleLocation, Direction);
+	}
 }
 
 bool AShooterWeapon_Projectile::ServerSpawnProjectile_Validate(FVector Location, FVector_NetQuantizeNormal Direction)
@@ -64,8 +48,4 @@ void AShooterWeapon_Projectile::ServerSpawnProjectile_Implementation(FVector Loc
 			UGameplayStatics::FinishSpawningActor(Projectile, Transform);
 		}
 	}
-	//else
-	//{
-	//	UE_LOG(LogShooter, Warning, TEXT("ProjectileClass is nullptr"));
-	//}
 }
