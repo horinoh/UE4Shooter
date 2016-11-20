@@ -19,35 +19,45 @@ public:
 
 	FORCEINLINE UTexture2D* GetCrosshairTexture() const { return CrosshairTexture; }
 
+	FORCEINLINE virtual float GetTargetingFOV() const { return 60.0f; } //!< ŽQl AShooterPlayerCameraManager::DefaultFOV == 90.0f
 	FORCEINLINE virtual float GetSpreadAngle() const { return 0.0f; }
 	FORCEINLINE virtual int32 GetSpreadNum() const { return 1; }
 	FORCEINLINE virtual float GetRangeDistance() const { return 10000.0f; }
 	virtual FVector GetMuzzleLocation() const;
 	virtual void GetAim(FVector& Start, FVector& Direction) const;
 	virtual bool LineTraceWeapon(const FVector& Start, const FVector& End, FHitResult& HitResult) const;
+
 	virtual void Fire() PURE_VIRTUAL(AShooterWeapon::Fire, );
 	
+	FORCEINLINE bool IsFiring() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_HandleFiring); }
 	virtual void StartFire();
 	virtual void StartSimulateFire();
-
 	virtual void EndFire();
 	virtual void EndSimulateFire();
-	
 	void HandleFiring();
 	void RepeatFiring();
-
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerEndFire();
 	virtual bool ServerEndFire_Validate();
 	virtual void ServerEndFire_Implementation();
-
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerHandleFiring();
 	virtual bool ServerHandleFiring_Validate();
 	virtual void ServerHandleFiring_Implementation();
-
 	UFUNCTION()
 	virtual void OnRep_BurstCounter();
+
+	FORCEINLINE bool IsReloading() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_ReloadFinished); }
+	virtual void StartReload();
+	virtual float StartSimulateReload();
+	virtual void EndReload();
+	virtual void EndSimulateReload();
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerStartReload();
+	virtual bool ServerStartReload_Validate();
+	virtual void ServerStartReload_Implementation();
+	UFUNCTION()
+	virtual void OnRep_Reload();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SkeletalMesh)
@@ -56,10 +66,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Texture)
 	UTexture2D* CrosshairTexture;
 
-	FTimerHandle TimerHandle_HandleFiring;
 	uint8 bWantsToFire : 1;
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_BurstCounter)
 	int32 BurstCounter;
+	FTimerHandle TimerHandle_HandleFiring;
+
+	FTimerHandle TimerHandle_EquipFinished;
+
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_Reload)
+	uint8 bPendingReload : 1;
+	FTimerHandle TimerHandle_ReloadFinished;
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	UAnimMontage* OwnerFireAnimMontage;
@@ -67,6 +83,9 @@ protected:
 	UAnimMontage* OwnerReloadAnimMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	UAnimMontage* OwnerEquipAnimMontage;
+
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	UAnimSequence* FireAnimSequence;
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	UAnimSequence* ReloadAnimSequence;
 };

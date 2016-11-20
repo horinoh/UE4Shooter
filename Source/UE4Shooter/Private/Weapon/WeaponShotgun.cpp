@@ -48,4 +48,9 @@ AWeaponShotgun::AWeaponShotgun(const FObjectInitializer& ObjectInitializer)
 	{
 		FireAnimSequence = FireAS.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> ReloadAS(TEXT("AnimSequence'/Game/PrototypeWeap/Anims/Reload_Shotgun_Hips_W.Reload_Shotgun_Hips_W'")); //!< Ironsights, Prone ‚à‚ ‚é
+	if (ReloadAS.Succeeded())
+	{
+		ReloadAnimSequence = ReloadAS.Object;
+	}
 }

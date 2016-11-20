@@ -48,4 +48,9 @@ AWeaponSniperRifle::AWeaponSniperRifle(const FObjectInitializer& ObjectInitializ
 	{
 		FireAnimSequence = FireAS.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> ReloadAS(TEXT("AnimSequence'/Game/PrototypeWeap/Anims/Reload_SniperRifle_Hips_W.Reload_SniperRifle_Hips_W'")); //!< Ironsights, Prone ‚à‚ ‚é
+	if (ReloadAS.Succeeded())
+	{
+		ReloadAnimSequence = ReloadAS.Object;
+	}
 }

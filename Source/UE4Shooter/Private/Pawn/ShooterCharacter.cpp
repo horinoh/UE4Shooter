@@ -200,7 +200,21 @@ void AShooterCharacter::EndFire()
 }
 void AShooterCharacter::StartReload()
 {
-
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && false == PC->bCinematicMode)
+	{
+		//if (CanReload())
+		{
+			const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
+			if (nullptr != Weapon)
+			{
+				//if (0 < Weapon->GetAmmo() && Weapon->GetAmmoInClip() < Weapon->GetAmmoPerClip())
+				{
+					Weapon->StartReload();
+				}
+			}
+		}
+	}
 }
 
 bool AShooterCharacter::IsSprinting() const

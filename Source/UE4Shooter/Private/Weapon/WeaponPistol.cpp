@@ -48,4 +48,9 @@ AWeaponPistol::AWeaponPistol(const FObjectInitializer& ObjectInitializer)
 	{
 		FireAnimSequence = FireAS.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> ReloadAS(TEXT("AnimSequence'/Game/PrototypeWeap/Anims/Reload_Pistol_W.Reload_Pistol_W'"));
+	if (ReloadAS.Succeeded())
+	{
+		ReloadAnimSequence = ReloadAS.Object;
+	}
 }

@@ -51,6 +51,12 @@ void AShooterWeapon_Instant::Fire()
 		Misses(RandomSeed, MissResults);
 	}
 }
+void AShooterWeapon_Instant::OnEquipFinished()
+{
+	Super::OnEquipFinished();
+
+	FireNotify.EndLocations.Empty();
+}
 
 void AShooterWeapon_Instant::HitConfirmed(const FHitResult& HitResult)
 {

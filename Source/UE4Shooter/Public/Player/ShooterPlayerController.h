@@ -13,7 +13,6 @@ class UE4SHOOTER_API AShooterPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
-	
-	
-	
+public:
+	AShooterPlayerController();
 };

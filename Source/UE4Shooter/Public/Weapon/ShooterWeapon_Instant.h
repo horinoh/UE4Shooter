@@ -25,6 +25,7 @@ class UE4SHOOTER_API AShooterWeapon_Instant : public AShooterWeapon
 public:
 	//!< AShooterWeapon
 	virtual void Fire() override;
+	virtual void OnEquipFinished() override;
 
 	void HitConfirmed(const FHitResult& HitResult);
 

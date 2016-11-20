@@ -50,6 +50,11 @@ AWeaponRocketLauncher::AWeaponRocketLauncher(const FObjectInitializer& ObjectIni
 	{
 		FireAnimSequence = FireAS.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> ReloadAS(TEXT("AnimSequence'/Game/PrototypeWeap/Anims/Reload_RocketLauncher_W.Reload_RocketLauncher_W'"));
+	if (ReloadAS.Succeeded())
+	{
+		ReloadAnimSequence = ReloadAS.Object;
+	}
 
 	//!< プロジェクタイルクラス
 	ProjectileClass = AProjectile_RocketLauncher::StaticClass();

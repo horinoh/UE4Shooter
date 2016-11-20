@@ -13,7 +13,12 @@ class AShooterPlayerCameraManager : public APlayerCameraManager
 {
 	GENERATED_BODY()
 	
-	
-	
-	
+public:
+	AShooterPlayerCameraManager();
+
+	//!< APlayerCameraManager
+	virtual void UpdateCamera(float DeltaTime) override;
+
+protected:
+	float CurrentFOV = DefaultFOV;
 };

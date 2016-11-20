@@ -55,14 +55,17 @@ void AShooterWeapon::Equip(APawn* NewOwner)
 	//!< 主にレプリケーションの為にオーナを指定
 	SetOwner(NewOwner);
 
-#if 0
+#if 1
 	//!< #TODO 装備アニメーション完了時に OnEquipFinished() がコールされる
-	const auto Character = Cast<ACharacter>(GetOwner());
-	if (nullptr != Character)
+	if (nullptr != OwnerEquipAnimMontage)
 	{
-		//!< Duration == 0.0f だとタイマをクリアしてしまうので注意
-		const auto Duration = FMath::Max(Character->PlayAnimMontage(EquipOwnerAnimMontage), 0.1f);
-		GetWorldTimerManager().SetTimer(TimerHandle_EquipFinished, this, &AShooterWeapon::OnEquipFinished, Duration, false);
+		const auto Owner = Cast<ACharacter>(GetOwner());
+		if (nullptr != Owner)
+		{
+			//!< Duration == 0.0f だとタイマをクリアしてしまうので注意
+			const auto Duration = FMath::Max(Owner->PlayAnimMontage(OwnerEquipAnimMontage), 0.1f);
+			GetWorldTimerManager().SetTimer(TimerHandle_EquipFinished, this, &AShooterWeapon::OnEquipFinished, Duration, false);
+		}
 	}
 #else
 	//!< 今は直接 OnEquipFinished() をコールしている
@@ -80,11 +83,12 @@ void AShooterWeapon::UnEquip()
 		SkeletalMeshComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	}
 
-	//!< #TODO
 	GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
-	//GetWorldTimerManager().ClearTimer(TimerHandle_EquipFinished);
+	GetWorldTimerManager().ClearTimer(TimerHandle_EquipFinished);
+	GetWorldTimerManager().ClearTimer(TimerHandle_ReloadFinished);
 
 	EndFire();
+	EndReload();
 }
 void AShooterWeapon::OnEquipFinished()
 {
@@ -291,7 +295,6 @@ void AShooterWeapon::RepeatFiring()
 		}
 	}
 }
-
 bool AShooterWeapon::ServerEndFire_Validate()
 {
 	return true;
@@ -300,7 +303,6 @@ void AShooterWeapon::ServerEndFire_Implementation()
 {
 	EndFire();
 }
-
 bool AShooterWeapon::ServerHandleFiring_Validate()
 {
 	return true;
@@ -309,7 +311,6 @@ void AShooterWeapon::ServerHandleFiring_Implementation()
 {
 	HandleFiring();
 }
-
 void AShooterWeapon::OnRep_BurstCounter()
 {
 	if (0 < BurstCounter)
@@ -322,9 +323,120 @@ void AShooterWeapon::OnRep_BurstCounter()
 	}
 }
 
+void AShooterWeapon::StartReload()
+{
+	const auto Duration = StartSimulateReload();
+
+	if (HasAuthority())
+	{
+		bPendingReload = true;
+	}
+	else
+	{
+		ServerStartReload();
+	}
+}
+float AShooterWeapon::StartSimulateReload()
+{
+	auto Duration = 0.0f;
+
+	//!< オーナーのアニメーション
+	if (nullptr != OwnerReloadAnimMontage)
+	{
+		const auto Owner = Cast<ACharacter>(GetOwner());
+		if (nullptr != Owner)
+		{
+			const auto SectionName = FName(TEXT("Default"));
+
+			Owner->PlayAnimMontage(OwnerReloadAnimMontage, 1.0f, SectionName);
+
+			const auto SectionIndex = OwnerReloadAnimMontage->GetSectionIndex(SectionName);
+			Duration = FMath::Max(OwnerReloadAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+		}
+		GetWorldTimerManager().SetTimer(TimerHandle_ReloadFinished, this, &AShooterWeapon::EndReload, Duration, false);
+	}
+
+	//!< 武器のアニメーション
+	if (nullptr != SkeletalMeshComp)
+	{
+		const auto AnimInst = SkeletalMeshComp->GetAnimInstance();
+		if (nullptr != AnimInst)
+		{
+			const auto SlotName = TEXT("DefaultSlot");
+			AnimInst->PlaySlotAnimationAsDynamicMontage(ReloadAnimSequence, SlotName);
+		}
+	}
+
+	return Duration;
+}
+void AShooterWeapon::EndReload()
+{
+	if (HasAuthority())
+	{
+		bPendingReload = false;
+	}
+	else
+	{
+		//!< ボタンが押されていれば、リロード後そのまま発砲へ
+		if (bWantsToFire)
+		{
+			if (nullptr != OwnerFireAnimMontage)
+			{
+				const auto Owner = Cast<ACharacter>(GetOwner());
+				if (nullptr != Owner)
+				{
+					const auto SkelMesh = Owner->GetMesh();
+					if (nullptr != SkelMesh)
+					{
+						const auto AnimInst = SkelMesh->GetAnimInstance();
+						if (nullptr != AnimInst)
+						{
+							const auto SectionName = AnimInst->Montage_GetCurrentSection();
+							const auto SectionIndex = OwnerFireAnimMontage->GetSectionIndex(SectionName);
+							const auto Duration = OwnerFireAnimMontage->GetSectionLength(SectionIndex);
+							GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &AShooterWeapon::HandleFiring, Duration, false);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+void AShooterWeapon::EndSimulateReload()
+{
+	if (nullptr != OwnerReloadAnimMontage)
+	{
+		const auto Character = Cast<ACharacter>(GetOwner());
+		if (nullptr != Character)
+		{
+			Character->StopAnimMontage(OwnerReloadAnimMontage);
+		}
+	}
+}
+bool AShooterWeapon::ServerStartReload_Validate()
+{
+	return true;
+}
+void AShooterWeapon::ServerStartReload_Implementation()
+{
+	StartReload();
+}
+void AShooterWeapon::OnRep_Reload()
+{
+	if (bPendingReload)
+	{
+		StartSimulateReload();
+	}
+	else
+	{
+		EndSimulateReload();
+	}
+}
+
 void AShooterWeapon::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AShooterWeapon, BurstCounter, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AShooterWeapon, bPendingReload, COND_SkipOwner);
 }

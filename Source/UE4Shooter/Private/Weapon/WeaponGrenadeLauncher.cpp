@@ -50,6 +50,11 @@ AWeaponGrenadeLauncher::AWeaponGrenadeLauncher(const FObjectInitializer& ObjectI
 	{
 		FireAnimSequence = FireAS.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> ReloadAS(TEXT("AnimSequence'/Game/PrototypeWeap/Anims/Reload_GrenadeLauncher_W.Reload_GrenadeLauncher_W'"));
+	if (ReloadAS.Succeeded())
+	{
+		ReloadAnimSequence = ReloadAS.Object;
+	}
 
 	//!< プロジェクタイルクラス
 	ProjectileClass = AProjectile_GrenadeLauncher::StaticClass();
