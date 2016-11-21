@@ -13,6 +13,10 @@ class UE4SHOOTER_API AShooterWeapon : public AActor
 public:	
 	AShooterWeapon(const FObjectInitializer& ObjectInitializer);
 
+	//!< AActor
+	virtual void PostInitializeComponents() override;
+
+	FORCEINLINE bool IsEquipping() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_EquipFinished); }
 	virtual void Equip(APawn* NewOwner);
 	virtual void UnEquip();
 	virtual void OnEquipFinished();
@@ -58,6 +62,7 @@ public:
 	virtual void ServerStartReload_Implementation();
 	UFUNCTION()
 	virtual void OnRep_Reload();
+	virtual void ReloadAmmo();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SkeletalMesh)
@@ -76,6 +81,7 @@ protected:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_Reload)
 	uint8 bPendingReload : 1;
 	FTimerHandle TimerHandle_ReloadFinished;
+	FTimerHandle TimerHandle_ReloadAmmo;
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	UAnimMontage* OwnerFireAnimMontage;

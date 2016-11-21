@@ -95,8 +95,8 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 
 	//!< インベントリ
 	DefaultInventoryClasses.AddUnique(AWeaponAssaultRifle::StaticClass());
-	DefaultInventoryClasses.AddUnique(AWeaponGrenadeLauncher::StaticClass());
-	DefaultInventoryClasses.AddUnique(AWeaponPistol::StaticClass());
+	//DefaultInventoryClasses.AddUnique(AWeaponGrenadeLauncher::StaticClass());
+	//DefaultInventoryClasses.AddUnique(AWeaponPistol::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponRocketLauncher::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponShotgun::StaticClass());
 	DefaultInventoryClasses.AddUnique(AWeaponSniperRifle::StaticClass());
@@ -144,6 +144,11 @@ void AShooterCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 		PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AShooterCharacter::StartFire);
 		PlayerInputComponent->BindAction("Fire", IE_Released, this, &AShooterCharacter::EndFire);
 		PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AShooterCharacter::StartReload);
+
+		PlayerInputComponent->BindAction("Equip0", IE_Pressed, this, &AShooterCharacter::Equip0);
+		PlayerInputComponent->BindAction("Equip1", IE_Pressed, this, &AShooterCharacter::Equip1);
+		PlayerInputComponent->BindAction("Equip2", IE_Pressed, this, &AShooterCharacter::Equip2);
+		PlayerInputComponent->BindAction("Equip3", IE_Pressed, this, &AShooterCharacter::Equip3);
 	}
 }
 
@@ -179,9 +184,24 @@ void AShooterCharacter::MoveRight(float Value)
 	}
 }
 
+bool AShooterCharacter::CanFire() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && false == PC->bCinematicMode)
+	{
+		if (!IsSprinting() /*&& IsTargeting()*/)
+		{
+			if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading() && !CurrentWeapon->IsFiring())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
 void AShooterCharacter::StartFire()
 {
-	//if (CanFire())
+	if (CanFire())
 	{
 		const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
 		if (nullptr != Weapon)
@@ -198,16 +218,30 @@ void AShooterCharacter::EndFire()
 		Weapon->EndFire();
 	}
 }
+
+bool AShooterCharacter::CanReload() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && !PC->bCinematicMode)
+	{
+		if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading())
+		{
+			return true;
+		}
+	}
+	return false;
+}
 void AShooterCharacter::StartReload()
 {
 	const auto PC = Cast<APlayerController>(GetController());
 	if (nullptr != PC && false == PC->bCinematicMode)
 	{
-		//if (CanReload())
+		if (CanReload())
 		{
 			const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
 			if (nullptr != Weapon)
 			{
+				//!< #TODO
 				//if (0 < Weapon->GetAmmo() && Weapon->GetAmmoInClip() < Weapon->GetAmmoPerClip())
 				{
 					Weapon->StartReload();
@@ -217,6 +251,18 @@ void AShooterCharacter::StartReload()
 	}
 }
 
+bool AShooterCharacter::CanSprint() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && !PC->bCinematicMode)
+	{
+		if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading() && !CurrentWeapon->IsFiring())
+		{
+			return true;
+		}
+	}
+	return false;
+}
 bool AShooterCharacter::IsSprinting() const
 {
 	//!< 前方速度が無いと「走り」にはしない
@@ -225,11 +271,14 @@ bool AShooterCharacter::IsSprinting() const
 }
 void AShooterCharacter::SetSprint(bool bNewSprint)
 {
-	bWantsToSprint = bNewSprint;
-
-	if (false == HasAuthority())
+	if (CanSprint())
 	{
-		ServerSetSprint(bNewSprint);
+		bWantsToSprint = bNewSprint;
+
+		if (false == HasAuthority())
+		{
+			ServerSetSprint(bNewSprint);
+		}
 	}
 }
 bool AShooterCharacter::ServerSetSprint_Validate(bool bNewSprint)
@@ -241,25 +290,36 @@ void AShooterCharacter::ServerSetSprint_Implementation(bool bNewSprint)
 	SetSprint(bNewSprint);
 }
 
+bool AShooterCharacter::CanTargeting() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && !PC->bCinematicMode)
+	{
+		if (!IsSprinting())
+		{
+			if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
 bool AShooterCharacter::IsTargeting() const
 {
 	return bIsTargeting;
 }
 void AShooterCharacter::SetTargeting(bool bNewTargeting)
 {
-	bIsTargeting = bNewTargeting;
-
-	if (false == HasAuthority())
+	if (CanTargeting())
 	{
-		ServerSetTargeting(bNewTargeting);
-	}
+		bIsTargeting = bNewTargeting;
 
-	//!< #TODO エイム音 (レプリケートしていない、自分だけでいいや)
-	//const auto Weapon = Cast<AShooterWeapon_Shooting>(CurrentWeapon);
-	//if (nullptr != Weapon)
-	//{
-	//	Weapon->SimulateTargeting(bIsTargeting);
-	//}
+		if (false == HasAuthority())
+		{
+			ServerSetTargeting(bNewTargeting);
+		}
+	}
 }
 bool AShooterCharacter::ServerSetTargeting_Validate(bool bNewTargeting)
 {
@@ -335,6 +395,7 @@ void AShooterCharacter::CreateInventory()
 						Weapon->Instigator = this;
 						//!< 主にレプリケーションの為にオーナを指定
 						Weapon->SetOwner(this);
+						Weapon->UnEquip();
 
 						Inventory.AddUnique(Weapon);
 					}
@@ -376,6 +437,18 @@ void AShooterCharacter::OnRep_CurrentWeapon(AShooterWeapon* LastWeapon)
 	}
 }
 
+bool AShooterCharacter::CanEquip() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && !PC->bCinematicMode)
+	{
+		if (nullptr == CurrentWeapon || (!CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading()))
+		{
+			return true;
+		}
+	}
+	return false;
+}
 void AShooterCharacter::Equip(AShooterWeapon* NewWeapon)
 {
 	if (nullptr != NewWeapon)
@@ -395,7 +468,7 @@ void AShooterCharacter::Equip(AShooterWeapon* NewWeapon)
 }
 void AShooterCharacter::Equip(const int32 Index)
 {
-	//if (CanEquip())
+	if (CanEquip())
 	{
 		const auto Num = Inventory.Num();
 		if (1 < Num && Index < Num)
@@ -440,6 +513,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	DOREPLIFETIME_CONDITION(AShooterCharacter, AimOffsetYaw, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AShooterCharacter, AimOffsetPitch, COND_SkipOwner);
 
+	DOREPLIFETIME_CONDITION(AShooterCharacter, Inventory, COND_OwnerOnly);
 	DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }
 

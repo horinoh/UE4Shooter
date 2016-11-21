@@ -36,10 +36,19 @@ public:
 	FORCEINLINE void EndSprint() { SetSprint(false); }
 	FORCEINLINE void StartTargeting() { SetTargeting(true); }
 	FORCEINLINE void EndTargeting() { SetTargeting(false); }
+	FORCEINLINE void Equip0() { Equip(0); }
+	FORCEINLINE void Equip1() { Equip(1); }
+	FORCEINLINE void Equip2() { Equip(2); }
+	FORCEINLINE void Equip3() { Equip(3); }
+
+	bool CanFire() const;
 	void StartFire();
 	void EndFire();
+	
+	bool CanReload() const;
 	void StartReload();
 
+	bool CanSprint() const;
 	bool IsSprinting() const;
 	void SetSprint(bool bNewSprint);
 	UFUNCTION(Reliable, Server, WithValidation)
@@ -47,6 +56,7 @@ public:
 	virtual bool ServerSetSprint_Validate(bool bNewSprint);
 	virtual void ServerSetSprint_Implementation(bool bNewSprint);
 
+	bool CanTargeting() const;
 	bool IsTargeting() const;
 	void SetTargeting(bool bNewTargeting);
 	UFUNCTION(Reliable, Server, WithValidation)
@@ -70,6 +80,8 @@ public:
 	void DestroyInventory();
 	UFUNCTION()
 	void OnRep_CurrentWeapon(AShooterWeapon* LastWeapon);
+
+	bool CanEquip() const;
 	void Equip(AShooterWeapon* NewWeapon);
 	void Equip(const int32 Index);
 	void EquipPrev();

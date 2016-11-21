@@ -1,7 +1,8 @@
-# インプット
+﻿# インプット
 
 * Action Mapping
     * Jump, Crouch, Sprint, Targeting, Fire, Reload を追加
+	* Equip[0-3] を追加
 
 ![画像](ActionMapping.png)
 
