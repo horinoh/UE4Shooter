@@ -41,13 +41,6 @@ public:
 	FORCEINLINE void Equip2() { Equip(2); }
 	FORCEINLINE void Equip3() { Equip(3); }
 
-	bool CanFire() const;
-	void StartFire();
-	void EndFire();
-	
-	bool CanReload() const;
-	void StartReload();
-
 	bool CanSprint() const;
 	bool IsSprinting() const;
 	void SetSprint(bool bNewSprint);
@@ -80,6 +73,14 @@ public:
 	void DestroyInventory();
 	UFUNCTION()
 	void OnRep_CurrentWeapon(AShooterWeapon* LastWeapon);
+	FORCEINLINE AShooterWeapon* GetWeapon() const { return CurrentWeapon; }
+
+	bool CanFire() const;
+	void StartFire();
+	void EndFire();
+
+	bool CanReload() const;
+	void StartReload();
 
 	bool CanEquip() const;
 	void Equip(AShooterWeapon* NewWeapon);
@@ -90,8 +91,6 @@ public:
 	void ServerEquip(AShooterWeapon* NewWeapon);
 	virtual bool ServerEquip_Validate(AShooterWeapon* NewWeapon);
 	virtual void ServerEquip_Implementation(AShooterWeapon* NewWeapon);
-
-	FORCEINLINE AShooterWeapon* GetWeapon() const { return CurrentWeapon; }
 
 protected:
 
@@ -105,10 +104,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Replicated)
 	float Health;
+
 	UPROPERTY(Transient, Replicated)
 	uint8 bWantsToSprint : 1;
 	UPROPERTY(Transient, Replicated)
 	uint8 bIsTargeting : 1;
+	
 	UPROPERTY(Transient, Replicated)
 	float AimOffsetYaw;
 	UPROPERTY(Transient, Replicated)

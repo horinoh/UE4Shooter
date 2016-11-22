@@ -184,73 +184,6 @@ void AShooterCharacter::MoveRight(float Value)
 	}
 }
 
-bool AShooterCharacter::CanFire() const
-{
-	const auto PC = Cast<APlayerController>(GetController());
-	if (nullptr != PC && false == PC->bCinematicMode)
-	{
-		if (!IsSprinting() /*&& IsTargeting()*/)
-		{
-			if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading() && !CurrentWeapon->IsFiring())
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-void AShooterCharacter::StartFire()
-{
-	if (CanFire())
-	{
-		const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
-		if (nullptr != Weapon)
-		{
-			Weapon->StartFire();
-		}
-	}
-}
-void AShooterCharacter::EndFire()
-{
-	const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
-	if (nullptr != Weapon)
-	{
-		Weapon->EndFire();
-	}
-}
-
-bool AShooterCharacter::CanReload() const
-{
-	const auto PC = Cast<APlayerController>(GetController());
-	if (nullptr != PC && !PC->bCinematicMode)
-	{
-		if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading())
-		{
-			return true;
-		}
-	}
-	return false;
-}
-void AShooterCharacter::StartReload()
-{
-	const auto PC = Cast<APlayerController>(GetController());
-	if (nullptr != PC && false == PC->bCinematicMode)
-	{
-		if (CanReload())
-		{
-			const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
-			if (nullptr != Weapon)
-			{
-				//!< #TODO
-				//if (0 < Weapon->GetAmmo() && Weapon->GetAmmoInClip() < Weapon->GetAmmoPerClip())
-				{
-					Weapon->StartReload();
-				}
-			}
-		}
-	}
-}
-
 bool AShooterCharacter::CanSprint() const
 {
 	const auto PC = Cast<APlayerController>(GetController());
@@ -434,6 +367,73 @@ void AShooterCharacter::OnRep_CurrentWeapon(AShooterWeapon* LastWeapon)
 	if (nullptr != GetWeapon())
 	{
 		GetWeapon()->Equip(this);
+	}
+}
+
+bool AShooterCharacter::CanFire() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && false == PC->bCinematicMode)
+	{
+		if (!IsSprinting() /*&& IsTargeting()*/)
+		{
+			if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading() && !CurrentWeapon->IsFiring())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+void AShooterCharacter::StartFire()
+{
+	if (CanFire())
+	{
+		const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
+		if (nullptr != Weapon)
+		{
+			Weapon->StartFire();
+		}
+	}
+}
+void AShooterCharacter::EndFire()
+{
+	const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
+	if (nullptr != Weapon)
+	{
+		Weapon->EndFire();
+	}
+}
+
+bool AShooterCharacter::CanReload() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && !PC->bCinematicMode)
+	{
+		if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+void AShooterCharacter::StartReload()
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && false == PC->bCinematicMode)
+	{
+		if (CanReload())
+		{
+			const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
+			if (nullptr != Weapon)
+			{
+				//!< #TODO
+				//if (0 < Weapon->GetAmmo() && Weapon->GetAmmoInClip() < Weapon->GetAmmoPerClip())
+				{
+					Weapon->StartReload();
+				}
+			}
+		}
 	}
 }
 

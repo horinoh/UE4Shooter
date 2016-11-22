@@ -31,6 +31,9 @@ public:
 	virtual void GetAim(FVector& Start, FVector& Direction) const;
 	virtual bool LineTraceWeapon(const FVector& Start, const FVector& End, FHitResult& HitResult) const;
 
+	FORCEINLINE int32 GetAmmoPerClip() const { return 6; }
+	FORCEINLINE int32 GetAmmoMax() const { return 3 * GetAmmoPerClip(); }
+
 	virtual void Fire() PURE_VIRTUAL(AShooterWeapon::Fire, );
 	
 	FORCEINLINE bool IsFiring() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_HandleFiring); }
@@ -71,6 +74,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Texture)
 	UTexture2D* CrosshairTexture;
 
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_Reload)
+	int32 AmmoInClip;
+	UPROPERTY(Transient, Replicated)
+	int32 Ammo;
+	
 	uint8 bWantsToFire : 1;
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_BurstCounter)
 	int32 BurstCounter;

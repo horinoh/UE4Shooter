@@ -52,7 +52,8 @@ void AShooterWeapon::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	//!< #TODO 弾丸の初期化
+	AmmoInClip = GetAmmoPerClip();
+	Ammo = GetAmmoMax();
 }
 
 void AShooterWeapon::Equip(APawn* NewOwner)
@@ -167,11 +168,11 @@ void AShooterWeapon::StartFire()
 		bWantsToFire = true;
 	}
 
-	if (true/*#TODO 弾がある*/)
+	if (0 < AmmoInClip)
 	{
 		HandleFiring();
 	}
-	else
+	else if(0 < Ammo)
 	{
 		StartReload();
 	}
@@ -236,7 +237,15 @@ void AShooterWeapon::HandleFiring()
 	if (HasAuthority())
 	{
 		//!< サーバ側は BurstCounter を更新する → クライアントで OnRep_BurstCounter()
-		++BurstCounter;
+		if (0 < AmmoInClip)
+		{
+			--AmmoInClip;
+			++BurstCounter;
+		}
+		else
+		{
+			BurstCounter = 0;
+		}
 	} 
 	else
 	{
@@ -246,11 +255,18 @@ void AShooterWeapon::HandleFiring()
 		{
 			if (bWantsToFire)
 			{
-				//!< Fire() は派生クラス毎に独自実装する
-				Fire();
+				if (0 < AmmoInClip)
+				{
+					//!< Fire() は派生クラス毎に独自実装する
+					Fire();
 
-				StartSimulateFire();
-				RepeatFiring();
+					StartSimulateFire();
+					RepeatFiring();
+				}
+				else if(0 < Ammo)
+				{
+					StartReload();
+				}
 			}
 			else
 			{
@@ -261,7 +277,7 @@ void AShooterWeapon::HandleFiring()
 
 		//!< サーバへ発砲させる
 		if (bWantsToFire)
-		{	
+		{
 			ServerHandleFiring();
 		}
 	}
@@ -374,8 +390,8 @@ void AShooterWeapon::EndReload()
 	}
 	else if (bWantsToFire)
 	{
-		//!< ボタンが押されていれば、リロード後そのまま発砲へ
-		RepeatFiring();
+		//!< ボタンが押されていれば、そのまま発砲へ
+		HandleFiring();
 	}
 }
 void AShooterWeapon::EndSimulateReload()
@@ -410,18 +426,20 @@ void AShooterWeapon::OnRep_Reload()
 }
 void AShooterWeapon::ReloadAmmo()
 {
-	//!< #TODO
-	//const auto ClipDelta = FMath::Min(CurrentAmmo, (GetAmmoPerClip() - CurrentAmmoInClip));
-	//if (ClipDelta > 0)
-	//{
-	//	CurrentAmmoInClip += ClipDelta;
-	//	CurrentAmmo -= ClipDelta;
-	//}
+	const auto ClipDelta = FMath::Min(Ammo, (GetAmmoPerClip() - AmmoInClip));
+	if (ClipDelta > 0)
+	{
+		AmmoInClip += ClipDelta;
+		Ammo -= ClipDelta;
+	}
 }
 
 void AShooterWeapon::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AShooterWeapon, AmmoInClip, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AShooterWeapon, Ammo, COND_OwnerOnly);
 
 	DOREPLIFETIME_CONDITION(AShooterWeapon, BurstCounter, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AShooterWeapon, bPendingReload, COND_SkipOwner);
