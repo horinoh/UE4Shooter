@@ -37,6 +37,9 @@ AShooterWeapon::AShooterWeapon(const FObjectInitializer& ObjectInitializer)
 		SkeletalMeshComp->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponInstant, ECR_Block);
 		SkeletalMeshComp->SetCollisionResponseToChannel(ECC_GameTraceChannel_WeaponProjectile, ECR_Block);
 
+		//!< 消しておく (装備されたときに出現させる)
+		SkeletalMeshComp->SetHiddenInGame(true);
+
 		SetRootComponent(SkeletalMeshComp);
 	}
 
@@ -161,6 +164,25 @@ bool AShooterWeapon::LineTraceWeapon(const FVector& Start, const FVector& End, F
 	}
 	return false;
 }
+
+int32 AShooterWeapon::GiveAmmo(const int32 Amount)
+{
+	//!< 加算できる最大値
+	const auto MaxAdd = FMath::Max(GetAmmoMax() - Ammo, 0);
+	//!< 減算できる最小値 (Amountが負の場合)
+	const auto MinSub = FMath::Max(-Ammo, FMath::Min(Amount, 0)); 
+	const auto AddAmount = FMath::Clamp(Amount, MinSub, MaxAdd);
+	Ammo += AddAmount;
+
+	//!< オートリロード
+	//if (0 < Ammo && 0 >= AmmoInClip)
+	//{
+	//	StartReload();
+	//}
+
+	return AddAmount;
+}
+
 void AShooterWeapon::StartFire()
 {
 	if (!bWantsToFire)

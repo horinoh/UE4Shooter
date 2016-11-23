@@ -33,6 +33,7 @@ public:
 
 	FORCEINLINE int32 GetAmmoPerClip() const { return 6; }
 	FORCEINLINE int32 GetAmmoMax() const { return 3 * GetAmmoPerClip(); }
+	virtual int32 GiveAmmo(const int32 Amount);
 
 	virtual void Fire() PURE_VIRTUAL(AShooterWeapon::Fire, );
 	

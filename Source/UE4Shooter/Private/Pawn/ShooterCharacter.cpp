@@ -328,7 +328,6 @@ void AShooterCharacter::CreateInventory()
 						Weapon->Instigator = this;
 						//!< 主にレプリケーションの為にオーナを指定
 						Weapon->SetOwner(this);
-						Weapon->UnEquip();
 
 						Inventory.AddUnique(Weapon);
 					}
