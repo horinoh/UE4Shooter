@@ -175,10 +175,10 @@ int32 AShooterWeapon::GiveAmmo(const int32 Amount)
 	Ammo += AddAmount;
 
 	//!< オートリロード
-	//if (0 < Ammo && 0 >= AmmoInClip)
-	//{
-	//	StartReload();
-	//}
+	if (0 < Ammo && 0 >= AmmoInClip)
+	{
+		StartReload();
+	}
 
 	return AddAmount;
 }
@@ -262,6 +262,7 @@ void AShooterWeapon::HandleFiring()
 		if (0 < AmmoInClip)
 		{
 			--AmmoInClip;
+			--Ammo;
 			++BurstCounter;
 		}
 		else
@@ -452,7 +453,6 @@ void AShooterWeapon::ReloadAmmo()
 	if (ClipDelta > 0)
 	{
 		AmmoInClip += ClipDelta;
-		Ammo -= ClipDelta;
 	}
 }
 
