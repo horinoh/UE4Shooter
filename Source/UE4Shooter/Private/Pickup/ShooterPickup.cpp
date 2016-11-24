@@ -131,6 +131,8 @@ void AShooterPickup::SimulateRespawn()
 	{
 		StaticMeshComp->SetHiddenInGame(false);
 	}
+
+	DrawDebugString(GetWorld(), FVector::UpVector * 50.0f, GetClass()->GetName(), this, FColor::Yellow, FLT_MAX);
 }
 
 void AShooterPickup::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

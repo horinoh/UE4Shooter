@@ -20,8 +20,8 @@ public:
 	UFUNCTION()
 	void OnRep_IsActive();
 	
-	void Respawn();
-	void PickedUp();
+	virtual void Respawn();
+	virtual void PickedUp();
 
 	virtual bool GiveTo(AActor* OtherActor) PURE_VIRTUAL(AShooterPickup::GiveTo, return false;);
 	bool GiveAmmoTo(class AShooterWeapon* Weapon);
