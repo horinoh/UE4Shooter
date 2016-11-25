@@ -31,8 +31,8 @@ public:
 	virtual void GetAim(FVector& Start, FVector& Direction) const;
 	virtual bool LineTraceWeapon(const FVector& Start, const FVector& End, FHitResult& HitResult) const;
 
-	FORCEINLINE int32 GetAmmoPerClip() const { return 6; }
-	FORCEINLINE int32 GetAmmoMax() const { return 3 * GetAmmoPerClip(); }
+	FORCEINLINE virtual int32 GetAmmoPerClip() const { return 6; }
+	FORCEINLINE virtual int32 GetAmmoMax() const { return 3 * GetAmmoPerClip(); }
 	virtual int32 GiveAmmo(const int32 Amount);
 
 	virtual void Fire() PURE_VIRTUAL(AShooterWeapon::Fire, );

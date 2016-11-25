@@ -58,4 +58,66 @@ AWeaponRocketLauncher::AWeaponRocketLauncher(const FObjectInitializer& ObjectIni
 
 	//!< プロジェクタイルクラス
 	ProjectileClass = AProjectileRocketLauncher::StaticClass();
+
+	//!< 先端についている弾
+	StaticMeshComp = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMeshComp"));
+	if (nullptr != StaticMeshComp)
+	{
+		StaticMeshComp->bReceivesDecals = false;
+
+		StaticMeshComp->SetCollisionObjectType(ECC_WorldDynamic);
+		StaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		StaticMeshComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+		StaticMeshComp->SetupAttachment(SkeletalMeshComp, TEXT("Ammo"));
+
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/PrototypeWeap/Prototype_RocketLauncher_Ammo.Prototype_RocketLauncher_Ammo'"));
+		if (SM.Succeeded())
+		{
+			StaticMeshComp->SetStaticMesh(SM.Object);
+		}
+	}
+}
+
+void AWeaponRocketLauncher::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	SetHideAmmo(true);
+}
+
+void AWeaponRocketLauncher::UnEquip()
+{
+	Super::UnEquip();
+
+	SetHideAmmo(true);
+}
+void AWeaponRocketLauncher::OnEquipFinished()
+{
+	Super::OnEquipFinished();
+
+	if (0 < AmmoInClip)
+	{
+		SetHideAmmo(false);
+	}
+}
+void AWeaponRocketLauncher::StartSimulateFire()
+{
+	Super::StartSimulateFire();
+
+	SetHideAmmo(true);
+}
+float AWeaponRocketLauncher::StartSimulateReload()
+{
+	SetHideAmmo(false);
+
+	return Super::StartSimulateReload();
+}
+
+void AWeaponRocketLauncher::SetHideAmmo(const bool IsHide)
+{
+	if (nullptr != StaticMeshComp)
+	{
+		StaticMeshComp->SetHiddenInGame(IsHide);
+	}
 }

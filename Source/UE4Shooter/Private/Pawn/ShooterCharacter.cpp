@@ -23,7 +23,7 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 	if (nullptr != CapsuleComp)
 	{
 		//!< ƒJƒƒ‰
-		SpringArmComp = ObjectInitializer.CreateDefaultSubobject<USpringArmComponent>(this, TEXT("SpringArm"));
+		SpringArmComp = ObjectInitializer.CreateDefaultSubobject<USpringArmComponent>(this, TEXT("SpringArmComp"));
 		if (nullptr != SpringArmComp)
 		{
 			SpringArmComp->SetupAttachment(CapsuleComp);

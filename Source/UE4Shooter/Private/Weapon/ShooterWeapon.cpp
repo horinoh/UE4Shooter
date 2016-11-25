@@ -18,7 +18,7 @@ AShooterWeapon::AShooterWeapon(const FObjectInitializer& ObjectInitializer)
 	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
 	bNetUseOwnerRelevancy = true;
 
-	SkeletalMeshComp = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("SkeletalMesh"));
+	SkeletalMeshComp = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("SkeletalMeshComp"));
 	if (nullptr != SkeletalMeshComp)
 	{
 		SkeletalMeshComp->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
