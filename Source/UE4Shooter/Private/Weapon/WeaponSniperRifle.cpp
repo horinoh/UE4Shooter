@@ -6,6 +6,8 @@
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimMontage.h"
 
+#include "ImpactEffectSniperRifle.h"
+
 AWeaponSniperRifle::AWeaponSniperRifle(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -53,4 +55,6 @@ AWeaponSniperRifle::AWeaponSniperRifle(const FObjectInitializer& ObjectInitializ
 	{
 		ReloadAnimSequence = ReloadAS.Object;
 	}
+
+	ImpactEffectClass = AImpactEffectSniperRifle::StaticClass();
 }

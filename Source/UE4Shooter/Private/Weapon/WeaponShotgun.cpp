@@ -6,6 +6,8 @@
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimMontage.h"
 
+#include "ImpactEffectShotgun.h"
+
 AWeaponShotgun::AWeaponShotgun(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -53,4 +55,6 @@ AWeaponShotgun::AWeaponShotgun(const FObjectInitializer& ObjectInitializer)
 	{
 		ReloadAnimSequence = ReloadAS.Object;
 	}
+
+	ImpactEffectClass = AImpactEffectShotgun::StaticClass();
 }

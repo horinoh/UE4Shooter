@@ -22,7 +22,7 @@ public:
 
 	UFUNCTION()
 	void OnRep_Exploded();
-	void SimulateExplode(const FHitResult& HitResult);
+	virtual void SimulateExplode(const FHitResult& HitResult);
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = Collision)
@@ -36,4 +36,12 @@ protected:
 
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_Exploded)
 	uint8 bExploded : 1;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Particle)
+	UParticleSystemComponent* TrailParticleComp;
+	UPROPERTY(EditDefaultsOnly, Category = Particle)
+	UParticleSystem* TrailParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
+	TSubclassOf<class AShooterImpactEffect> ImpactEffectClass;
 };

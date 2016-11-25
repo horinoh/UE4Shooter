@@ -5,6 +5,8 @@
 
 #include "UnrealNetwork.h"
 
+#include "ShooterImpactEffect.h"
+
 AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -77,6 +79,10 @@ void AShooterProjectile::PostInitializeComponents()
 	{
 		ProjectileMovementComp->OnProjectileStop.AddDynamic(this, &AShooterProjectile::OnProjectileStop);
 	}
+	if (nullptr != TrailParticle)
+	{
+		TrailParticleComp = UGameplayStatics::SpawnEmitterAttached(TrailParticle, StaticMeshComp);
+	}
 
 	SetLifeSpan(10.0f);
 }
@@ -143,14 +149,32 @@ void AShooterProjectile::SimulateExplode(const FHitResult& HitResult)
 	{
 		StaticMeshComp->SetHiddenInGame(true);
 	}
+	if (nullptr != TrailParticleComp)
+	{
+		TrailParticleComp->SetHiddenInGame(true);
+	}
 
 	const auto World = GetWorld();
 	if (nullptr != World)
 	{
-		const auto Location = HitResult.ImpactPoint;
-		const auto Rotation = HitResult.ImpactNormal.Rotation();
-	
-		DrawDebugSphere(World, Location, 100.0f, 8, FColor::Red, false, 2.0f);
+		if (nullptr != ImpactEffectClass)
+		{
+			const auto Location = HitResult.ImpactPoint;
+			const auto Rotation = HitResult.ImpactNormal.Rotation();
+		
+			auto Effect = World->SpawnActorDeferred<AShooterImpactEffect>(ImpactEffectClass, FTransform(Rotation, Location));
+			if (nullptr != Effect)
+			{
+				//!< Surface ‘®«‚ðŒ©‚Äo‚µ•ª‚¯‚éˆ×‚É FHitResult ‚ª•K—v
+				Effect->SetHitResult(HitResult);
+				UGameplayStatics::FinishSpawningActor(Effect, FTransform(Rotation, Location));
+			}
+		}
+		else
+		{
+			const auto Location = HitResult.ImpactPoint;
+			DrawDebugSphere(World, Location, 100.0f, 8, FColor::Red, false, 2.0f);
+		}
 	}
 }
 

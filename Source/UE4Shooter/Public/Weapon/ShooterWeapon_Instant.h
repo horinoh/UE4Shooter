@@ -47,4 +47,7 @@ public:
 protected:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_FireNotify)
 	FFireNotify FireNotify;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
+	TSubclassOf<class AShooterImpactEffect> ImpactEffectClass;
 };

@@ -32,8 +32,29 @@ void AShooterWeapon_Instant::Fire()
 		{
 			HitResults.Add(HitResult);
 
-			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.0f, 8, FColor::Red, false, 2.0f);
-			DrawDebugLine(GetWorld(), MuzzleLocation, HitResult.ImpactPoint, FColor::Red, false, 2.0f);
+			const auto World = GetWorld();
+			if (nullptr != World)
+			{
+				const auto Location = HitResult.ImpactPoint;
+				if (nullptr != ImpactEffectClass)
+				{
+					const auto Rotation = HitResult.ImpactNormal.Rotation();
+
+					auto Effect = World->SpawnActorDeferred<AShooterImpactEffect>(ImpactEffectClass, FTransform(Rotation, Location));
+					if (nullptr != Effect)
+					{
+						//!< Surface ‘®«‚ðŒ©‚Äo‚µ•ª‚¯‚éˆ×‚É FHitResult ‚ª•K—v
+						Effect->SetHitResult(HitResult);
+						UGameplayStatics::FinishSpawningActor(Effect, FTransform(Rotation, Location));
+					}
+				}
+				else
+				{
+					DrawDebugSphere(World, Location, 5.0f, 8, FColor::Red, false, 2.0f);
+				}
+
+				DrawDebugLine(World, MuzzleLocation, HitResult.ImpactPoint, FColor::Red, false, 2.0f);
+			}
 		}
 		else
 		{

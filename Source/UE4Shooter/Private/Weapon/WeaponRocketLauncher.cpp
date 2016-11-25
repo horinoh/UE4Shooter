@@ -6,7 +6,7 @@
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimMontage.h"
 
-#include "Projectile_RocketLauncher.h"
+#include "ProjectileRocketLauncher.h"
 
 AWeaponRocketLauncher::AWeaponRocketLauncher(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -57,5 +57,5 @@ AWeaponRocketLauncher::AWeaponRocketLauncher(const FObjectInitializer& ObjectIni
 	}
 
 	//!< プロジェクタイルクラス
-	ProjectileClass = AProjectile_RocketLauncher::StaticClass();
+	ProjectileClass = AProjectileRocketLauncher::StaticClass();
 }

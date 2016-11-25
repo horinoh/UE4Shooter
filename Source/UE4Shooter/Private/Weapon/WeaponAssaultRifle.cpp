@@ -6,6 +6,8 @@
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimMontage.h"
 
+#include "ImpactEffectAssaultRifle.h"
+
 AWeaponAssaultRifle::AWeaponAssaultRifle(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -53,4 +55,6 @@ AWeaponAssaultRifle::AWeaponAssaultRifle(const FObjectInitializer& ObjectInitial
 	{
 		ReloadAnimSequence = ReloadAS.Object;
 	}
+
+	ImpactEffectClass = AImpactEffectAssaultRifle::StaticClass();
 }
