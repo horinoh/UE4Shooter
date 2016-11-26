@@ -121,6 +121,36 @@ void AShooterCharacter::PostInitializeComponents()
 
 	CreateInventory();
 }
+float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const auto ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	if (0.0f != ActualDamage)
+	{
+		Health -= ActualDamage;
+
+		if (FPointDamageEvent::ClassID == DamageEvent.GetTypeID())
+		{
+			const auto PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
+		}
+		else if (FRadialDamageEvent::ClassID == DamageEvent.GetTypeID())
+		{
+			const auto RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+		}
+
+		const auto DamageType = DamageEvent.DamageTypeClass ? DamageEvent.DamageTypeClass->GetDefaultObject<UDamageType>() : GetDefault<UDamageType>();
+		EventInstigator = GetDamageInstigator(EventInstigator, *DamageType);
+		const auto PawnInstigator = nullptr != EventInstigator ? EventInstigator->GetPawn() : nullptr;
+		if (0.0f >= Health && false == IsPendingKill())
+		{
+			Die(ActualDamage, DamageEvent, PawnInstigator, DamageCauser);
+		}
+		else {
+			Hit(ActualDamage, DamageEvent, PawnInstigator, DamageCauser);
+		}
+	}
+
+	return ActualDamage;
+}
 
 void AShooterCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -184,6 +214,140 @@ void AShooterCharacter::MoveRight(float Value)
 	}
 }
 
+void AShooterCharacter::Hit(float Damage, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
+{
+	//!< #MY_TODO レプリケート → クライアントでOnRep_TakeHitInfo()
+	//TakeHitInfo.Damage = Damage;
+	//TakeHitInfo.PawnInstigator = PawnInstigator;
+	//TakeHitInfo.DamageCauser = DamageCauser;
+	//TakeHitInfo.SetDamageEvent(DamageEvent);
+	TakeHitInfo.bKilled = false;
+
+	if (IsLocallyControlled())
+	{
+		SimulateHit();
+	}
+}
+void AShooterCharacter::SimulateHit()
+{
+	//!< #MY_TODO フォースフィードバック
+	UForceFeedbackEffect* ForceFeedbackEffect = nullptr;
+	if (nullptr != ForceFeedbackEffect)
+	{
+		const auto PC = Cast<APlayerController>(GetController());
+		if (nullptr != PC)
+		{
+			PC->ClientPlayForceFeedback(ForceFeedbackEffect, false, TEXT("ForceFeedback"));
+		}
+	}
+}
+void AShooterCharacter::Die(float Damage, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser)
+{
+	Health = FMath::Max(0.0f, Health);
+
+	//!< レプリケート更新
+	NetUpdateFrequency = GetDefault<AShooterCharacter>()->NetUpdateFrequency;
+	const auto MovementComp = GetCharacterMovement();
+	if (nullptr != MovementComp)
+	{
+		MovementComp->ForceReplicationUpdate();
+	}
+
+	//!< #MY_TODO レプリケート → クライアントでOnRep_TakeHitInfo()
+	//TakeHitInfo.Damage = Damage;
+	//TakeHitInfo.PawnInstigator = PawnInstigator;
+	//TakeHitInfo.DamageCauser = DamageCauser;
+	//TakeHitInfo.SetDamageEvent(DamageEvent);
+	TakeHitInfo.bKilled = true;
+
+	if (IsLocallyControlled())
+	{
+		SimulateDie();
+	}
+}
+void AShooterCharacter::SimulateDie()
+{
+	bTearOff = true;
+	bReplicateMovement = false;
+
+	//!< デストロイされるポーンからコントローラを安全にデタッチする
+	DetachFromControllerPendingDestroy();
+
+	const auto CapsuleComp = GetCapsuleComponent();
+	if (nullptr != CapsuleComp)
+	{
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	}
+
+	StopAnimMontage();
+
+	//!< #MY_TODO 死亡アニメーション再生
+	//PlayAnimMontage(DeathAnimMontage, 1.0f, SectionName);
+	//const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
+	//const auto Duration = FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+
+	//!< 死亡アニメーション後ラグドールへ
+	const auto Duration = 1.0f;
+	FTimerHandle TimerHandle_RagdollPhysics;
+	GetWorldTimerManager().SetTimer(TimerHandle_RagdollPhysics, this, &AShooterCharacter::SetRagdollPhysics, Duration, false);
+
+	//!< #MY_TODO フォースフィードバック
+	UForceFeedbackEffect* ForceFeedbackEffect = nullptr;
+	if (nullptr != ForceFeedbackEffect)
+	{
+		const auto PC = Cast<APlayerController>(GetController());
+		if (nullptr != PC)
+		{
+			PC->ClientPlayForceFeedback(ForceFeedbackEffect, false, TEXT("ForceFeedback"));
+		}
+	}
+}
+void AShooterCharacter::SetRagdollPhysics()
+{
+	const auto MovementComp = GetCharacterMovement();
+	if (nullptr != MovementComp)
+	{
+		MovementComp->StopMovementImmediately();
+		MovementComp->DisableMovement();
+		MovementComp->SetComponentTickEnabled(false);
+	}
+
+	const auto SkelMesh = GetMesh();
+	if (nullptr != SkelMesh)
+	{
+		SkelMesh->SetCollisionProfileName(FName(TEXT("Ragdoll")));
+	}
+	SetActorEnableCollision(true);
+	if (false == IsPendingKill() && nullptr != SkelMesh && nullptr != SkelMesh->GetPhysicsAsset())
+	{
+		SkelMesh->SetAllBodiesSimulatePhysics(true);
+		SkelMesh->SetSimulatePhysics(true);
+		SkelMesh->WakeAllRigidBodies();
+		SkelMesh->bBlendPhysics = true;
+
+		SetLifeSpan(10.0f);
+	}
+	else
+	{
+		TurnOff();
+		SetActorHiddenInGame(true);
+
+		SetLifeSpan(1.0f);
+	}
+}
+void AShooterCharacter::OnRep_TakeHitInfo()
+{
+	if (TakeHitInfo.bKilled)
+	{
+		SimulateDie();
+	}
+	else
+	{
+		SimulateHit();
+	}
+}
+
 bool AShooterCharacter::CanSprint() const
 {
 	const auto PC = Cast<APlayerController>(GetController());
@@ -208,10 +372,15 @@ void AShooterCharacter::SetSprint(bool bNewSprint)
 	{
 		bWantsToSprint = bNewSprint;
 
-		if (false == HasAuthority())
+		if (!HasAuthority())
 		{
 			ServerSetSprint(bNewSprint);
 		}
+
+		//if (IsLocallyControlled())
+		//{
+		//	SimulateSprint();
+		//}
 	}
 }
 bool AShooterCharacter::ServerSetSprint_Validate(bool bNewSprint)
@@ -248,9 +417,14 @@ void AShooterCharacter::SetTargeting(bool bNewTargeting)
 	{
 		bIsTargeting = bNewTargeting;
 
-		if (false == HasAuthority())
+		if (!HasAuthority())
 		{
 			ServerSetTargeting(bNewTargeting);
+		}
+
+		if (IsLocallyControlled())
+		{
+			SimulateTargeting();
 		}
 	}
 }
@@ -261,6 +435,13 @@ bool AShooterCharacter::ServerSetTargeting_Validate(bool bNewTargeting)
 void AShooterCharacter::ServerSetTargeting_Implementation(bool bNewTargeting)
 {
 	SetTargeting(bNewTargeting);
+}
+void AShooterCharacter::SimulateTargeting()
+{
+	if (nullptr != CurrentWeapon)
+	{
+		CurrentWeapon->SimulateTargeting(bIsTargeting);
+	}
 }
 
 void AShooterCharacter::UpdateAimOffset(float DeltaSeconds)
@@ -363,9 +544,9 @@ void AShooterCharacter::OnRep_CurrentWeapon(AShooterWeapon* LastWeapon)
 	{
 		LastWeapon->UnEquip();
 	}
-	if (nullptr != GetWeapon())
+	if (nullptr != CurrentWeapon)
 	{
-		GetWeapon()->Equip(this);
+		CurrentWeapon->Equip(this);
 	}
 }
 
@@ -426,7 +607,7 @@ void AShooterCharacter::StartReload()
 			const auto Weapon = Cast<AShooterWeapon>(CurrentWeapon);
 			if (nullptr != Weapon)
 			{
-				//!< #TODO
+				//!< #MY_TODO
 				//if (0 < Weapon->GetAmmo() && Weapon->GetAmmoInClip() < Weapon->GetAmmoPerClip())
 				{
 					Weapon->StartReload();
@@ -455,14 +636,19 @@ void AShooterCharacter::Equip(AShooterWeapon* NewWeapon)
 		if (HasAuthority())
 		{
 			auto LastWeapon = GetWeapon();
-			//!< CurrentWeapon はレプリケートされるので、結果的にクライアントでも OnRep_CurrentWeapon() をされる
 			CurrentWeapon = NewWeapon;
+
 			OnRep_CurrentWeapon(LastWeapon);
 		}
 		else
 		{
 			ServerEquip(NewWeapon);
 		}
+
+		//if (IsLocallyControlled())
+		//{
+		//	SimulateEquip();
+		//}
 	}
 }
 void AShooterCharacter::Equip(const int32 Index)
@@ -507,6 +693,9 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AShooterCharacter, Health, COND_OwnerOnly);
+	//DOREPLIFETIME_CONDITION(AShooterCharacter, TakeHitInfo, COND_Custom);
+	DOREPLIFETIME(AShooterCharacter, TakeHitInfo);
+
 	DOREPLIFETIME_CONDITION(AShooterCharacter, bWantsToSprint, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AShooterCharacter, bIsTargeting, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AShooterCharacter, AimOffsetYaw, COND_SkipOwner);

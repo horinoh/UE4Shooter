@@ -106,10 +106,10 @@ void AShooterProjectile::OnProjectileStop(const FHitResult& HitResult)
 			bExploded = true;
 
 			//!< ダメージ
-			//const auto Location = HitResult.ImpactPoint + HitResult.ImpactNormal * 10.0f;
-			//const auto Damage = 100.0f;
-			//const auto Radius = 100.0f;
-			//UGameplayStatics::ApplyRadialDamage(this, Damage, Location, Radius, UShooterDamageType::StaticClass(), TArray<AActor*>(), this, GetInstigatorController());
+			const auto Location = HitResult.ImpactPoint + HitResult.ImpactNormal * 10.0f;
+			const auto Damage = 100.0f;
+			const auto Radius = 100.0f;
+			UGameplayStatics::ApplyRadialDamage(this, Damage, Location, Radius, /*UShooterDamageType*/UDamageType::StaticClass(), TArray<AActor*>(), this, GetInstigatorController());
 
 			if (nullptr != ProjectileMovementComp)
 			{
@@ -153,29 +153,13 @@ void AShooterProjectile::SimulateExplode(const FHitResult& HitResult)
 	{
 		TrailParticleComp->SetHiddenInGame(true);
 	}
+	
+	SpawnImpactEffect(HitResult);
+}
 
-	const auto World = GetWorld();
-	if (nullptr != World)
-	{
-		if (nullptr != ImpactEffectClass)
-		{
-			const auto Location = HitResult.ImpactPoint;
-			const auto Rotation = HitResult.ImpactNormal.Rotation();
-		
-			auto Effect = World->SpawnActorDeferred<AShooterImpactEffect>(ImpactEffectClass, FTransform(Rotation, Location));
-			if (nullptr != Effect)
-			{
-				//!< Surface 属性を見て出し分ける為に FHitResult が必要
-				Effect->SetHitResult(HitResult);
-				UGameplayStatics::FinishSpawningActor(Effect, FTransform(Rotation, Location));
-			}
-		}
-		else
-		{
-			const auto Location = HitResult.ImpactPoint;
-			DrawDebugSphere(World, Location, 100.0f, 8, FColor::Red, false, 2.0f);
-		}
-	}
+void AShooterProjectile::SpawnImpactEffect(const FHitResult& HitResult)
+{
+	AShooterWeapon::SpawnImpactEffect(GetWorld(), ImpactEffectClass, HitResult);
 }
 
 void AShooterProjectile::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

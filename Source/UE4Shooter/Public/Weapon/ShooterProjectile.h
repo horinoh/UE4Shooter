@@ -24,6 +24,8 @@ public:
 	void OnRep_Exploded();
 	virtual void SimulateExplode(const FHitResult& HitResult);
 
+	void SpawnImpactEffect(const FHitResult& HitResult);
+
 protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = Collision)
 	USphereComponent* SphereComp;

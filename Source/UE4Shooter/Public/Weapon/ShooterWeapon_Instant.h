@@ -44,6 +44,9 @@ public:
 	UFUNCTION()
 	void OnRep_FireNotify();
 
+	FORCEINLINE void SpawnImpactEffect(const FHitResult& HitResult) { AShooterWeapon::SpawnImpactEffect(GetWorld(), ImpactEffectClass, HitResult); }
+	FORCEINLINE void SpawnTrailEffect(const FVector& End) { DrawDebugLine(GetWorld(), GetMuzzleLocation(), End, FColor::Red, false, 2.0f); }
+
 protected:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_FireNotify)
 	FFireNotify FireNotify;

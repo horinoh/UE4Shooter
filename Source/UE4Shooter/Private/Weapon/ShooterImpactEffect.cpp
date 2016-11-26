@@ -48,7 +48,7 @@ void AShooterImpactEffect::PostInitializeComponents()
 	}
 	else
 	{
-		DrawDebugBox(GetWorld(), Location, FVector(8.0f, 8.0f, 1.0f), FQuat::FindBetweenNormals(HitResult.ImpactNormal, FVector::UpVector), FColor::Red, false, 50.0f);
+		DrawDebugBox(GetWorld(), Location, FVector(8.0f, 8.0f, 1.0f), FQuat::FindBetweenNormals(HitResult.ImpactNormal, FVector::UpVector), FColor::White, false, 50.0f);
 	}
 }
 

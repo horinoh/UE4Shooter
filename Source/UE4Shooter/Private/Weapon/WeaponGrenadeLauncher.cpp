@@ -56,6 +56,18 @@ AWeaponGrenadeLauncher::AWeaponGrenadeLauncher(const FObjectInitializer& ObjectI
 		ReloadAnimSequence = ReloadAS.Object;
 	}
 
+	//!< エイム音
+	static ConstructorHelpers::FObjectFinder<USoundCue> RaiseSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/GrenadeLauncher/GL_Raise_Cue.GL_Raise_Cue'"));
+	if (RaiseSC.Succeeded())
+	{
+		RaiseSoundCue = RaiseSC.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<USoundCue> LowerSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/GrenadeLauncher/GL_Lower_Cue.GL_Lower_Cue'"));
+	if (LowerSC.Succeeded())
+	{
+		LowerSoundCue = LowerSC.Object;
+	}
+
 	//!< プロジェクタイルクラス
 	ProjectileClass = AProjectileGrenadeLauncher::StaticClass();
 }

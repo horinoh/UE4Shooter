@@ -32,35 +32,14 @@ void AShooterWeapon_Instant::Fire()
 		{
 			HitResults.Add(HitResult);
 
-			const auto World = GetWorld();
-			if (nullptr != World)
-			{
-				const auto Location = HitResult.ImpactPoint;
-				if (nullptr != ImpactEffectClass)
-				{
-					const auto Rotation = HitResult.ImpactNormal.Rotation();
-
-					auto Effect = World->SpawnActorDeferred<AShooterImpactEffect>(ImpactEffectClass, FTransform(Rotation, Location));
-					if (nullptr != Effect)
-					{
-						//!< Surface 属性を見て出し分ける為に FHitResult が必要
-						Effect->SetHitResult(HitResult);
-						UGameplayStatics::FinishSpawningActor(Effect, FTransform(Rotation, Location));
-					}
-				}
-				else
-				{
-					DrawDebugSphere(World, Location, 5.0f, 8, FColor::Red, false, 2.0f);
-				}
-
-				DrawDebugLine(World, MuzzleLocation, HitResult.ImpactPoint, FColor::Red, false, 2.0f);
-			}
+			SpawnImpactEffect(HitResult);
+			SpawnTrailEffect(HitResult.ImpactPoint);
 		}
 		else
 		{
 			MissResults |= (1 << i);
 
-			DrawDebugLine(GetWorld(), MuzzleLocation, End, FColor::Red, false, 2.0f);
+			SpawnTrailEffect(End);
 		}
 	}
 	if (HitResults.Num())
@@ -84,23 +63,21 @@ void AShooterWeapon_Instant::HitConfirmed(const FHitResult& HitResult)
 	const auto Actor = HitResult.GetActor();
 	if (nullptr != Actor)
 	{
-		//!< #TODO
-		//const auto Pawn = Cast<APawn>(GetOwner());
-		//if (nullptr != Pawn)
-		//{
-		//	FPointDamageEvent DamageEvent;
-		//	DamageEvent.DamageTypeClass = UShooterDamageType::StaticClass();
-		//	DamageEvent.Damage = 10.0f;
-		//	DamageEvent.ShotDirection = (HitResult.TraceEnd - HitResult.TraceStart).GetSafeNormal();
-		//	DamageEvent.HitInfo = HitResult;
+		const auto Pawn = Cast<APawn>(GetOwner());
+		if (nullptr != Pawn)
+		{
+			FPointDamageEvent DamageEvent;
+			DamageEvent.DamageTypeClass = UDamageType::StaticClass();//UShooterDamageType::StaticClass();
+			DamageEvent.Damage = 10.0f;
+			DamageEvent.ShotDirection = (HitResult.TraceEnd - HitResult.TraceStart).GetSafeNormal();
+			DamageEvent.HitInfo = HitResult;
 
-		//	UE_LOG(LogShooter, Log, TEXT("%s : TakeDamage %s -> %s ( %s )"), HasAuthority() ? TEXT("Server") : TEXT("Client"), *Pawn->GetName(), *Actor->GetName(), *HitResult.BoneName.ToString());
-		//	if (TEXT("head") == HitResult.BoneName)
-		//	{
-		//		DamageEvent.Damage *= 10.0f;
-		//	}
-		//	Actor->TakeDamage(DamageEvent.Damage, DamageEvent, Pawn->GetController(), this);
-		//}
+			if (TEXT("head") == HitResult.BoneName)
+			{
+				DamageEvent.Damage *= 10.0f;
+			}
+			Actor->TakeDamage(DamageEvent.Damage, DamageEvent, Pawn->GetController(), this);
+		}
 	}
 
 	//!< 要素数が SpreadNum を超えてたということは、前回の発砲が完了したのでリセット
@@ -223,12 +200,12 @@ void AShooterWeapon_Instant::OnRep_FireNotify()
 		FHitResult HitResult(ForceInit);
 		if (LineTraceWeapon(Start, End, HitResult))
 		{
-			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.0f, 8, FColor::Red, false, 2.0f);
-			DrawDebugLine(GetWorld(), MuzzleLocation, HitResult.ImpactPoint, FColor::Red, false, 2.0f);
+			SpawnImpactEffect(HitResult);
+			SpawnTrailEffect(HitResult.ImpactPoint);
 		}
 		else
 		{
-			DrawDebugLine(GetWorld(), MuzzleLocation, End, FColor::Red, false, 2.0f);
+			SpawnTrailEffect(End);
 		}
 	}
 }

@@ -56,10 +56,22 @@ AWeaponRocketLauncher::AWeaponRocketLauncher(const FObjectInitializer& ObjectIni
 		ReloadAnimSequence = ReloadAS.Object;
 	}
 
+	//!< エイム音
+	static ConstructorHelpers::FObjectFinder<USoundCue> RaiseSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/RocketLauncher/RL_Raise_Cue.RL_Raise_Cue'"));
+	if (RaiseSC.Succeeded())
+	{
+		RaiseSoundCue = RaiseSC.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<USoundCue> LowerSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/RocketLauncher/RL_Lower_Cue.RL_Lower_Cue'"));
+	if (LowerSC.Succeeded())
+	{
+		LowerSoundCue = LowerSC.Object;
+	}
+
 	//!< プロジェクタイルクラス
 	ProjectileClass = AProjectileRocketLauncher::StaticClass();
 
-	//!< 先端についている弾
+	//!< (先端についている)見た目だけの弾
 	StaticMeshComp = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMeshComp"));
 	if (nullptr != StaticMeshComp)
 	{

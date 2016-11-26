@@ -56,5 +56,18 @@ AWeaponPistol::AWeaponPistol(const FObjectInitializer& ObjectInitializer)
 		ReloadAnimSequence = ReloadAS.Object;
 	}
 
+	//!< エイム音
+	static ConstructorHelpers::FObjectFinder<USoundCue> RaiseSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/Pistol/Pistol_Raise_Cue.Pistol_Raise_Cue'"));
+	if (RaiseSC.Succeeded())
+	{
+		RaiseSoundCue = RaiseSC.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<USoundCue> LowerSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/Pistol/Pistol_Lower_Cue.Pistol_Lower_Cue'"));
+	if (LowerSC.Succeeded())
+	{
+		LowerSoundCue = LowerSC.Object;
+	}
+
+	//!< インパクトエフェクト
 	ImpactEffectClass = AImpactEffectPistol::StaticClass();
 }

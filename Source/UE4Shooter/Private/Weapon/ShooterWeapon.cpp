@@ -207,7 +207,7 @@ void AShooterWeapon::StartSimulateFire()
 	{
 		if (nullptr != OwnerFireAnimMontage)
 		{
-			//!< #TODO IsTargeting() ‚Ìê‡‚É "Ironsights"
+			//!< #MY_TODO IsTargeting() ‚Ìê‡‚É "Ironsights"
 			const auto SectionName = FName(TEXT("Default"));
 			Chara->PlayAnimMontage(OwnerFireAnimMontage, 1.0f, SectionName);
 		}
@@ -453,6 +453,39 @@ void AShooterWeapon::ReloadAmmo()
 	if (ClipDelta > 0)
 	{
 		AmmoInClip += ClipDelta;
+	}
+}
+
+void AShooterWeapon::SimulateTargeting(const bool bIsTargeting)
+{
+	const auto Sound = bIsTargeting ? RaiseSoundCue : LowerSoundCue;
+	if (nullptr != Sound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, Sound, GetActorLocation());
+	}
+}
+
+void AShooterWeapon::SpawnImpactEffect(UWorld* World, UClass* Class, const FHitResult& HitResult)
+{
+	if (nullptr != World)
+	{
+		const auto Location = HitResult.ImpactPoint;
+		if (nullptr != Class)
+		{
+			const auto Rotation = HitResult.ImpactNormal.Rotation();
+
+			auto Effect = World->SpawnActorDeferred<AShooterImpactEffect>(Class, FTransform(Rotation, Location));
+			if (nullptr != Effect)
+			{
+				//!< Surface ‘®«‚ðŒ©‚Äo‚µ•ª‚¯‚éˆ×‚É FHitResult ‚ª•K—v
+				Effect->SetHitResult(HitResult);
+				UGameplayStatics::FinishSpawningActor(Effect, FTransform(Rotation, Location));
+			}
+		}
+		else
+		{
+			DrawDebugSphere(World, Location, 5.0f, 8, FColor::Red, false, 2.0f);
+		}
 	}
 }
 

@@ -17,4 +17,10 @@ class UE4SHOOTER_API AWeaponSniperRifle : public AShooterWeapon_Instant
 
 	//!< AShooterWeapon
 	FORCEINLINE virtual float GetTargetingFOV() const { return 30.0f; }
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundCue* ZoomInSoundCue;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundCue* ZoomOutSoundCue;
 };

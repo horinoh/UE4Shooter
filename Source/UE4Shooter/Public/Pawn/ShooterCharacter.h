@@ -7,6 +7,28 @@
 
 class AShooterWeapon;
 
+USTRUCT()
+struct FTakeHitInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	float Damage;
+	UPROPERTY()
+	TWeakObjectPtr<class APawn> PawnInstigator;
+	UPROPERTY()
+	TWeakObjectPtr<class AActor> DamageCauser;
+
+	UPROPERTY()
+	int32 DamageEventClassID;
+	UPROPERTY()
+	UClass* DamageTypeClass;
+
+	UPROPERTY()
+	uint8 bKilled : 1;
+};
+
 UCLASS()
 class UE4SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -18,6 +40,7 @@ public:
 	//!< AActor
 	virtual void Tick( float DeltaSeconds ) override;
 	virtual void PostInitializeComponents() override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	//!< APawn
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -41,6 +64,14 @@ public:
 	FORCEINLINE void Equip2() { Equip(2); }
 	FORCEINLINE void Equip3() { Equip(3); }
 
+	void Hit(float Damage, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
+	void SimulateHit();
+	void Die(float Damage, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
+	void SimulateDie();
+	void SetRagdollPhysics();
+	UFUNCTION()
+	void OnRep_TakeHitInfo();
+
 	bool CanSprint() const;
 	bool IsSprinting() const;
 	void SetSprint(bool bNewSprint);
@@ -48,6 +79,7 @@ public:
 	void ServerSetSprint(bool bNewSprint);
 	virtual bool ServerSetSprint_Validate(bool bNewSprint);
 	virtual void ServerSetSprint_Implementation(bool bNewSprint);
+	//void SimulateSprint() {}
 
 	bool CanTargeting() const;
 	bool IsTargeting() const;
@@ -56,6 +88,7 @@ public:
 	void ServerSetTargeting(bool bNewTargeting);
 	virtual bool ServerSetTargeting_Validate(bool bNewTargeting);
 	virtual void ServerSetTargeting_Implementation(bool bNewTargeting);
+	void SimulateTargeting();
 
 	FORCEINLINE float GetSpeedScale() const { return (IsSprinting() ? 1.5f : 1.0f) * (IsTargeting() ? 0.75f : 1.0f); }
 
@@ -91,6 +124,7 @@ public:
 	void ServerEquip(AShooterWeapon* NewWeapon);
 	virtual bool ServerEquip_Validate(AShooterWeapon* NewWeapon);
 	virtual void ServerEquip_Implementation(AShooterWeapon* NewWeapon);
+	//void SimulateEquip() {}
 
 protected:
 
@@ -103,7 +137,9 @@ protected:
 	TArray<UMaterialInstanceDynamic*> MaterialInstanceDynamics;
 
 	UPROPERTY(VisibleAnywhere, Replicated)
-	float Health;
+	float Health = 100.0f;
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_TakeHitInfo)
+	struct FTakeHitInfo TakeHitInfo;
 
 	UPROPERTY(Transient, Replicated)
 	uint8 bWantsToSprint : 1;
@@ -121,4 +157,7 @@ protected:
 	TArray<AShooterWeapon*> Inventory;
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_CurrentWeapon)
 	AShooterWeapon* CurrentWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation)
+	UAnimMontage* DeathAnimMontage;
 };

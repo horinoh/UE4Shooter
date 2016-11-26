@@ -56,5 +56,18 @@ AWeaponAssaultRifle::AWeaponAssaultRifle(const FObjectInitializer& ObjectInitial
 		ReloadAnimSequence = ReloadAS.Object;
 	}
 
+	//!< エイム音
+	static ConstructorHelpers::FObjectFinder<USoundCue> RaiseSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/Rifle/Rifle_Raise_Cue.Rifle_Raise_Cue'"));
+	if (RaiseSC.Succeeded())
+	{
+		RaiseSoundCue = RaiseSC.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<USoundCue> LowerSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/Rifle/Rifle_Lower_Cue.Rifle_Lower_Cue'"));
+	if (LowerSC.Succeeded())
+	{
+		LowerSoundCue = LowerSC.Object;
+	}
+
+	//!< インパクトエフェクト
 	ImpactEffectClass = AImpactEffectAssaultRifle::StaticClass();
 }

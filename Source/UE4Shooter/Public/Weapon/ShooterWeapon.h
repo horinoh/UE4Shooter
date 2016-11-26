@@ -68,6 +68,10 @@ public:
 	virtual void OnRep_Reload();
 	virtual void ReloadAmmo();
 
+	virtual void SimulateTargeting(const bool bIsTargeting);
+
+	static void SpawnImpactEffect(UWorld* World, UClass* Class, const FHitResult& HitResult);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SkeletalMesh)
 	USkeletalMeshComponent* SkeletalMeshComp;
@@ -103,4 +107,9 @@ protected:
 	UAnimSequence* FireAnimSequence;
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	UAnimSequence* ReloadAnimSequence;
+
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundCue* RaiseSoundCue;
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	USoundCue* LowerSoundCue;
 };

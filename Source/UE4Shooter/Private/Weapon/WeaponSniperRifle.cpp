@@ -57,4 +57,28 @@ AWeaponSniperRifle::AWeaponSniperRifle(const FObjectInitializer& ObjectInitializ
 	}
 
 	ImpactEffectClass = AImpactEffectSniperRifle::StaticClass();
+
+	//!< エイム音
+	static ConstructorHelpers::FObjectFinder<USoundCue> RaiseSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/SniperRifle/SR_Raise_Cue.SR_Raise_Cue'"));
+	if (RaiseSC.Succeeded())
+	{
+		RaiseSoundCue = RaiseSC.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<USoundCue> LowerSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/SniperRifle/SR_Lower_Cue.SR_Lower_Cue'"));
+	if (LowerSC.Succeeded())
+	{
+		LowerSoundCue = LowerSC.Object;
+	}
+
+	//!< ズーム音
+	static ConstructorHelpers::FObjectFinder<USoundCue> ZoomInSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/SniperRifle/SR_ZoomIn_Cue.SR_ZoomIn_Cue'"));
+	if (ZoomInSC.Succeeded())
+	{
+		ZoomInSoundCue = ZoomInSC.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<USoundCue> ZoomOutSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/SniperRifle/SR_ZoomOut_Cue.SR_ZoomOut_Cue'"));
+	if (ZoomOutSC.Succeeded())
+	{
+		ZoomOutSoundCue = ZoomOutSC.Object;
+	}
 }
