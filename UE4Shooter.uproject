@@ -9,14 +9,15 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"AIModule"
 			]
 		}
 	],
 	"Plugins": [
-  		{
-    			"Name": "OnlineSubsystemSteam",
-    			"Enabled": true
-    		}
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true
+		}
 	]
 }

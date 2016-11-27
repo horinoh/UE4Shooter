@@ -15,4 +15,7 @@ class UE4SHOOTER_API AShooterPlayerController : public APlayerController
 	
 public:
 	AShooterPlayerController();
+
+	//!< APlayerController
+	virtual void UnFreeze() override;
 };

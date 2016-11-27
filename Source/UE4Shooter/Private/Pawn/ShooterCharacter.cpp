@@ -199,18 +199,71 @@ void AShooterCharacter::Destroyed()
 	DestroyInventory();
 }
 
+void AShooterCharacter::Jump()
+{
+	if (CanJump())
+	{
+		Super::Jump();
+	}
+}
+void AShooterCharacter::Crouch(bool bClientSimulation)
+{
+	if (CanCrouch())
+	{
+		Super::Crouch(bClientSimulation);
+	}
+}
+
+bool AShooterCharacter::CanCrouch()
+{
+	if (Super::CanCrouch())
+	{
+		const auto PC = Cast<APlayerController>(GetController());
+		if (nullptr != PC && !PC->bCinematicMode)
+		{
+			return !IsTargeting() && !IsJumpProvidingForce();
+		}
+	}
+	return false;
+}
+
+bool AShooterCharacter::CanJump() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && !PC->bCinematicMode)
+	{
+		return !IsTargeting();
+	}
+	return false;
+}
+
+bool AShooterCharacter::CanMove() const
+{
+	const auto PC = Cast<APlayerController>(GetController());
+	if (nullptr != PC && !PC->bCinematicMode)
+	{
+		return !IsTargeting();
+	}
+	return false;
+}
 void AShooterCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)
 	{
-		AddMovementInput(GetActorForwardVector(), Value);
+		if (CanMove())
+		{
+			AddMovementInput(GetActorForwardVector(), Value);
+		}
 	}
 }
 void AShooterCharacter::MoveRight(float Value)
 {
 	if (Value != 0.0f)
 	{
-		AddMovementInput(GetActorRightVector(), Value);
+		if (CanMove())
+		{
+			AddMovementInput(GetActorRightVector(), Value);
+		}
 	}
 }
 
@@ -270,9 +323,6 @@ void AShooterCharacter::SimulateDie()
 	bTearOff = true;
 	bReplicateMovement = false;
 
-	//!< デストロイされるポーンからコントローラを安全にデタッチする
-	DetachFromControllerPendingDestroy();
-
 	const auto CapsuleComp = GetCapsuleComponent();
 	if (nullptr != CapsuleComp)
 	{
@@ -288,7 +338,7 @@ void AShooterCharacter::SimulateDie()
 	//const auto Duration = FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
 
 	//!< 死亡アニメーション後ラグドールへ
-	const auto Duration = 1.0f;
+	const auto Duration = 0.1f;
 	FTimerHandle TimerHandle_RagdollPhysics;
 	GetWorldTimerManager().SetTimer(TimerHandle_RagdollPhysics, this, &AShooterCharacter::SetRagdollPhysics, Duration, false);
 
@@ -326,7 +376,7 @@ void AShooterCharacter::SetRagdollPhysics()
 		SkelMesh->WakeAllRigidBodies();
 		SkelMesh->bBlendPhysics = true;
 
-		SetLifeSpan(10.0f);
+		SetLifeSpan(5.0f);
 	}
 	else
 	{
@@ -335,6 +385,11 @@ void AShooterCharacter::SetRagdollPhysics()
 
 		SetLifeSpan(1.0f);
 	}
+
+	//!< デストロイされるポーンからコントローラを安全にデタッチする
+	const auto Delay = GetLifeSpan();
+	FTimerHandle TimerHandle_Detach;
+	GetWorldTimerManager().SetTimer(TimerHandle_Detach, this, &AShooterCharacter::DetachFromControllerPendingDestroy, Delay, false);
 }
 void AShooterCharacter::OnRep_TakeHitInfo()
 {

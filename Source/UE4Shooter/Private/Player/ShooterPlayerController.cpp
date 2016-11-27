@@ -10,3 +10,10 @@ AShooterPlayerController::AShooterPlayerController()
 {
 	PlayerCameraManagerClass = AShooterPlayerCameraManager::StaticClass();
 }
+
+void AShooterPlayerController::UnFreeze()
+{
+	Super::UnFreeze();
+
+	ServerRestartPlayer();
+}

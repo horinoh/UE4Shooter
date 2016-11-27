@@ -48,6 +48,14 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void Destroyed() override;
 
+	//!< ACharacter
+	virtual void Jump() override;
+	virtual void Crouch(bool bClientSimulation = false) override;
+	virtual bool CanCrouch() override;
+
+	bool CanJump() const;
+
+	bool CanMove() const;
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
