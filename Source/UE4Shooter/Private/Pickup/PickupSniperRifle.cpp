@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UE4Shooter.h"
-#include "Pickup_SniperRifle.h"
+#include "PickupSniperRifle.h"
 
 #include "Pawn/ShooterCharacter.h"
 #include "Weapon/WeaponSniperRifle.h"
 
-APickup_SniperRifle::APickup_SniperRifle(const FObjectInitializer& ObjectInitializer)
+APickupSniperRifle::APickupSniperRifle(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	if (nullptr != StaticMeshComp)
@@ -25,7 +25,7 @@ APickup_SniperRifle::APickup_SniperRifle(const FObjectInitializer& ObjectInitial
 	}
 }
 
-bool APickup_SniperRifle::GiveTo(AActor* OtherActor)
+bool APickupSniperRifle::GiveTo(AActor* OtherActor)
 {
 	const auto Chara = Cast<AShooterCharacter>(OtherActor);
 	if (nullptr != Chara)

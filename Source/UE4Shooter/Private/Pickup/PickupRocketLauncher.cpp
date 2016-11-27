@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UE4Shooter.h"
-#include "Pickup_RocketLauncher.h"
+#include "PickupRocketLauncher.h"
 
 #include "Pawn/ShooterCharacter.h"
 #include "Weapon/WeaponRocketLauncher.h"
 
-APickup_RocketLauncher::APickup_RocketLauncher(const FObjectInitializer& ObjectInitializer)
+APickupRocketLauncher::APickupRocketLauncher(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	if (nullptr != StaticMeshComp)
@@ -25,7 +25,7 @@ APickup_RocketLauncher::APickup_RocketLauncher(const FObjectInitializer& ObjectI
 	}
 }
 
-bool APickup_RocketLauncher::GiveTo(AActor* OtherActor)
+bool APickupRocketLauncher::GiveTo(AActor* OtherActor)
 {
 	const auto Chara = Cast<AShooterCharacter>(OtherActor);
 	if (nullptr != Chara)

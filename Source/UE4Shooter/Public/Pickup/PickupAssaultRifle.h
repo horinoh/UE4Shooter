@@ -3,18 +3,18 @@
 #pragma once
 
 #include "Pickup/ShooterPickup.h"
-#include "Pickup_AssaultRifle.generated.h"
+#include "PickupAssaultRifle.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class APickup_AssaultRifle : public AShooterPickup
+class UE4SHOOTER_API APickupAssaultRifle : public AShooterPickup
 {
 	GENERATED_BODY()
 	
 public:
-	APickup_AssaultRifle(const FObjectInitializer& ObjectInitializer);
+	APickupAssaultRifle(const FObjectInitializer& ObjectInitializer);
 
 	//!< AShooterPickup
 	virtual bool GiveTo(AActor* OtherActor) override;

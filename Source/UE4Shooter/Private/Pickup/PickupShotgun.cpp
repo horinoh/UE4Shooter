@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UE4Shooter.h"
-#include "Pickup_Shotgun.h"
+#include "PickupShotgun.h"
 
 #include "Pawn/ShooterCharacter.h"
 #include "Weapon/WeaponShotgun.h"
 
-APickup_Shotgun::APickup_Shotgun(const FObjectInitializer& ObjectInitializer)
+APickupShotgun::APickupShotgun(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	if (nullptr != StaticMeshComp)
@@ -25,7 +25,7 @@ APickup_Shotgun::APickup_Shotgun(const FObjectInitializer& ObjectInitializer)
 	}
 }
 
-bool APickup_Shotgun::GiveTo(AActor* OtherActor)
+bool APickupShotgun::GiveTo(AActor* OtherActor)
 {
 	const auto Chara = Cast<AShooterCharacter>(OtherActor);
 	if (nullptr != Chara)

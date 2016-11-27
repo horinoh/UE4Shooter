@@ -3,18 +3,18 @@
 #pragma once
 
 #include "Pickup/ShooterPickup.h"
-#include "Pickup_GrenadeLauncher.generated.h"
+#include "PickupRocketLauncher.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE4SHOOTER_API APickup_GrenadeLauncher : public AShooterPickup
+class UE4SHOOTER_API APickupRocketLauncher : public AShooterPickup
 {
 	GENERATED_BODY()
 	
 public:
-	APickup_GrenadeLauncher(const FObjectInitializer& ObjectInitializer);
+	APickupRocketLauncher(const FObjectInitializer& ObjectInitializer);
 
 	//!< AShooterPickup
 	virtual bool GiveTo(AActor* OtherActor) override;
