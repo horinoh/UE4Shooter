@@ -79,6 +79,7 @@ public:
 	void SetRagdollPhysics();
 	UFUNCTION()
 	void OnRep_TakeHitInfo();
+	FORCEINLINE bool IsKilled() const { return TakeHitInfo.bKilled; }
 
 	bool CanSprint() const;
 	bool IsSprinting() const;

@@ -140,7 +140,7 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 		const auto DamageType = DamageEvent.DamageTypeClass ? DamageEvent.DamageTypeClass->GetDefaultObject<UDamageType>() : GetDefault<UDamageType>();
 		EventInstigator = GetDamageInstigator(EventInstigator, *DamageType);
 		const auto PawnInstigator = nullptr != EventInstigator ? EventInstigator->GetPawn() : nullptr;
-		if (0.0f >= Health && false == IsPendingKill())
+		if (0.0f >= Health && !IsPendingKill())
 		{
 			Die(ActualDamage, DamageEvent, PawnInstigator, DamageCauser);
 		}
@@ -232,7 +232,7 @@ bool AShooterCharacter::CanJump() const
 	const auto PC = Cast<APlayerController>(GetController());
 	if (nullptr != PC && !PC->bCinematicMode)
 	{
-		return !IsTargeting();
+		return !IsKilled() && !IsTargeting();
 	}
 	return false;
 }
@@ -242,7 +242,7 @@ bool AShooterCharacter::CanMove() const
 	const auto PC = Cast<APlayerController>(GetController());
 	if (nullptr != PC && !PC->bCinematicMode)
 	{
-		return !IsTargeting();
+		return !IsKilled() && !IsTargeting();
 	}
 	return false;
 }
@@ -312,6 +312,19 @@ void AShooterCharacter::Die(float Damage, struct FDamageEvent const& DamageEvent
 	//TakeHitInfo.DamageCauser = DamageCauser;
 	//TakeHitInfo.SetDamageEvent(DamageEvent);
 	TakeHitInfo.bKilled = true;
+	
+	//!< #MY_TODO 死亡アニメーションの時間
+	//const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
+	const auto Duration = 0.1f;//FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+	
+	//!< ラグドールの時間
+	const auto SkelMesh = GetMesh();
+	const auto Delay = nullptr != SkelMesh && nullptr != SkelMesh->GetPhysicsAsset() ? 5.0f : 1.0f;
+	SetLifeSpan(Duration + Delay);
+
+	//!< コントローラからデタッチ
+	FTimerHandle TimerHandle_Detach;
+	GetWorldTimerManager().SetTimer(TimerHandle_Detach, this, &AShooterCharacter::DetachFromControllerPendingDestroy, GetLifeSpan(), false);
 
 	if (IsLocallyControlled())
 	{
@@ -335,10 +348,9 @@ void AShooterCharacter::SimulateDie()
 	//!< #MY_TODO 死亡アニメーション再生
 	//PlayAnimMontage(DeathAnimMontage, 1.0f, SectionName);
 	//const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
-	//const auto Duration = FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+	const auto Duration = 0.1f;//FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
 
 	//!< 死亡アニメーション後ラグドールへ
-	const auto Duration = 0.1f;
 	FTimerHandle TimerHandle_RagdollPhysics;
 	GetWorldTimerManager().SetTimer(TimerHandle_RagdollPhysics, this, &AShooterCharacter::SetRagdollPhysics, Duration, false);
 
@@ -369,7 +381,7 @@ void AShooterCharacter::SetRagdollPhysics()
 		SkelMesh->SetCollisionProfileName(FName(TEXT("Ragdoll")));
 	}
 	SetActorEnableCollision(true);
-	if (false == IsPendingKill() && nullptr != SkelMesh && nullptr != SkelMesh->GetPhysicsAsset())
+	if (!IsPendingKill() && nullptr != SkelMesh && nullptr != SkelMesh->GetPhysicsAsset())
 	{
 		SkelMesh->SetAllBodiesSimulatePhysics(true);
 		SkelMesh->SetSimulatePhysics(true);
@@ -385,12 +397,8 @@ void AShooterCharacter::SetRagdollPhysics()
 
 		SetLifeSpan(1.0f);
 	}
-
-	//!< デストロイされるポーンからコントローラを安全にデタッチする
-	const auto Delay = GetLifeSpan();
-	FTimerHandle TimerHandle_Detach;
-	GetWorldTimerManager().SetTimer(TimerHandle_Detach, this, &AShooterCharacter::DetachFromControllerPendingDestroy, Delay, false);
 }
+
 void AShooterCharacter::OnRep_TakeHitInfo()
 {
 	if (TakeHitInfo.bKilled)
@@ -408,10 +416,7 @@ bool AShooterCharacter::CanSprint() const
 	const auto PC = Cast<APlayerController>(GetController());
 	if (nullptr != PC && !PC->bCinematicMode)
 	{
-		if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading() && !CurrentWeapon->IsFiring())
-		{
-			return true;
-		}
+		return !IsPendingKill() && (nullptr == CurrentWeapon || (!CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading() && !CurrentWeapon->IsFiring()));
 	}
 	return false;
 }
@@ -454,10 +459,7 @@ bool AShooterCharacter::CanTargeting() const
 	{
 		if (!IsSprinting())
 		{
-			if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading())
-			{
-				return true;
-			}
+			return !IsKilled() && (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading());
 		}
 	}
 	return false;
@@ -510,7 +512,7 @@ void AShooterCharacter::UpdateAimOffset(float DeltaSeconds)
 			const auto InterpSpeed = 15.0f;
 			const auto NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaSeconds, InterpSpeed);
 
-			if (false == bUseControllerRotationYaw)
+			if (!bUseControllerRotationYaw)
 			{
 				AimOffsetYaw = FMath::Clamp(FRotator::NormalizeAxis(NewRot.Yaw), -90.0f, 90.0f);
 			}
@@ -608,15 +610,9 @@ void AShooterCharacter::OnRep_CurrentWeapon(AShooterWeapon* LastWeapon)
 bool AShooterCharacter::CanFire() const
 {
 	const auto PC = Cast<APlayerController>(GetController());
-	if (nullptr != PC && false == PC->bCinematicMode)
+	if (nullptr != PC && !PC->bCinematicMode)
 	{
-		if (!IsSprinting() /*&& IsTargeting()*/)
-		{
-			if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading() && !CurrentWeapon->IsFiring())
-			{
-				return true;
-			}
-		}
+		return !IsKilled() && !IsSprinting() && nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading() && !CurrentWeapon->IsFiring();
 	}
 	return false;
 }
@@ -645,17 +641,14 @@ bool AShooterCharacter::CanReload() const
 	const auto PC = Cast<APlayerController>(GetController());
 	if (nullptr != PC && !PC->bCinematicMode)
 	{
-		if (nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading())
-		{
-			return true;
-		}
+		return !IsKilled() && nullptr != CurrentWeapon && !CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading();
 	}
 	return false;
 }
 void AShooterCharacter::StartReload()
 {
 	const auto PC = Cast<APlayerController>(GetController());
-	if (nullptr != PC && false == PC->bCinematicMode)
+	if (nullptr != PC && !PC->bCinematicMode)
 	{
 		if (CanReload())
 		{
@@ -677,10 +670,7 @@ bool AShooterCharacter::CanEquip() const
 	const auto PC = Cast<APlayerController>(GetController());
 	if (nullptr != PC && !PC->bCinematicMode)
 	{
-		if (nullptr == CurrentWeapon || (!CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading()))
-		{
-			return true;
-		}
+		return !IsKilled() && (nullptr == CurrentWeapon || (!CurrentWeapon->IsEquipping() && !CurrentWeapon->IsReloading()));
 	}
 	return false;
 }

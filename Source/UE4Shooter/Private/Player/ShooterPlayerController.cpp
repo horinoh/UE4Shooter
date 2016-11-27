@@ -11,9 +11,23 @@ AShooterPlayerController::AShooterPlayerController()
 	PlayerCameraManagerClass = AShooterPlayerCameraManager::StaticClass();
 }
 
-void AShooterPlayerController::UnFreeze()
+void AShooterPlayerController::BeginInactiveState()
 {
-	Super::UnFreeze();
+	Super::BeginInactiveState();
 
-	ServerRestartPlayer();
+	const auto Delay = GetMinRespawnDelay();
+	GetWorldTimerManager().SetTimer(TimerHandle_Respawn, this, &AShooterPlayerController::Respawn, Delay);
+}
+
+void AShooterPlayerController::Respawn()
+{
+	const auto World = GetWorld();
+	if (nullptr != World)
+	{
+		const auto GameMode = World->GetAuthGameMode();
+		if (nullptr != GameMode)
+		{
+			GameMode->RestartPlayer(this);
+		}
+	}
 }
