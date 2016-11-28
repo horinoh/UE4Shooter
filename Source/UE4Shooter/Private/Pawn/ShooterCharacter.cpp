@@ -4,6 +4,7 @@
 #include "ShooterCharacter.h"
 
 #include "UnrealNetwork.h"
+#include "Animation/AnimMontage.h"
 
 #include "ShooterCharaMovementComponent.h"
 
@@ -91,6 +92,13 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 
 		//!< デフォルト値が false なので true にしないとしゃがめない
 		MovementComp->GetNavAgentPropertiesRef().bCanCrouch = true;
+	}
+
+	//!< アニメーション
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeathAM(TEXT("AnimMontage'/Game/Shooter/Animation/Montage/AM_Death.AM_Death'"));
+	if (DeathAM.Succeeded())
+	{
+		DeathAnimMontage = DeathAM.Object;
 	}
 
 	//!< インベントリ
@@ -313,9 +321,18 @@ void AShooterCharacter::Die(float Damage, struct FDamageEvent const& DamageEvent
 	//TakeHitInfo.SetDamageEvent(DamageEvent);
 	TakeHitInfo.bKilled = true;
 	
-	//!< #MY_TODO 死亡アニメーションの時間
-	//const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
-	const auto Duration = 0.1f;//FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+	//!< 死亡アニメーションの時間
+	const auto Duration = [&]()
+	{
+		if (nullptr != DeathAnimMontage)
+		{
+			const auto SectionName = FName(TEXT("Default"));
+			PlayAnimMontage(DeathAnimMontage, 1.0f, SectionName);
+			const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
+			return FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+		}
+		return 0.1f;
+	}();
 	
 	//!< ラグドールの時間
 	const auto SkelMesh = GetMesh();
@@ -345,10 +362,18 @@ void AShooterCharacter::SimulateDie()
 
 	StopAnimMontage();
 
-	//!< #MY_TODO 死亡アニメーション再生
-	//PlayAnimMontage(DeathAnimMontage, 1.0f, SectionName);
-	//const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
-	const auto Duration = 0.1f;//FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+	//!< 死亡アニメーション再生
+	const auto Duration = [&]()
+	{
+		if (nullptr != DeathAnimMontage)
+		{
+			const auto SectionName = FName(TEXT("Default"));
+			PlayAnimMontage(DeathAnimMontage, 1.0f, SectionName);
+			const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
+			return FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+		}
+		return 0.1f;
+	}();
 
 	//!< 死亡アニメーション後ラグドールへ
 	FTimerHandle TimerHandle_RagdollPhysics;

@@ -22,7 +22,19 @@ void AShooterAIController::BeginInactiveState()
 {
 	Super::BeginInactiveState();
 	
-	const auto Delay = 1.0f;
+	const auto Delay = [&]()
+	{
+		const auto World = GetWorld();
+		if (nullptr != World)
+		{
+			const auto GameState = World->GetGameState();
+			if (nullptr != GameState)
+			{
+				return GameState->GetPlayerRespawnDelay(this);
+			}
+		}
+		return 1.0f;
+	}();
 	GetWorldTimerManager().SetTimer(TimerHandle_Respawn, this, &AShooterAIController::Respawn, Delay);
 }
 void AShooterAIController::GameHasEnded(class AActor* EndGameFocus, bool bIsWinner)

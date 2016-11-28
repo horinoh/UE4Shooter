@@ -1,7 +1,7 @@
 # アニメーションモンタージュ
 * 発砲
     * AM_Fire_Rifle, AM_Fire_Shotgun を作成 (ライフルとショットガン用のモーションしかないので他は流用する)
-        * DefaultGroup.UpperBody スロットを選択を選択する
+        * DefaultGroup.UpperBody スロットを選択する
         * それぞれ Fire_Rifle_Hip, Fire_Shotgun_Hip をドラッグ&ドロップ
         * それぞれ Fire_Rifle_Ironsights, Fire_Shotgun_Ironsights をドラッグ&ドロップ
             * セクション名 Ironsights を追加する
@@ -13,7 +13,7 @@
 
 * リロード
     * AM_Reload_Rifle, AM_Reload_Shotgun, AM_Reload_Pistol を作成 (ライフル、ショットガン、ピストル用しかないので他は流用)
-        * DefaultGroup.UpperBody スロットを選択を選択する
+        * DefaultGroup.UpperBody スロットを選択する
         * それぞれ Reload_Rifle_Hip, Reload_Shotgun_Hip, Reload_Pistol をドラッグ&ドロップ
         * ピストル以外は Reload_Rifle_Ironsights, Reload_Shotgun_Ironsights をドラッグ&ドロップ
             * セクション名 Ironsights を追加する
@@ -22,5 +22,12 @@
 
 * 装備
     * AM_Equip_Rifle, AM_Equip_Pistol を作成 (ライフル、ピストル用しかないので他は流用)
-        * DefaultGroup.UpperBody スロットを選択を選択する
+        * DefaultGroup.UpperBody スロットを選択する
         * それぞれ Equip_Rifle_Standing, Equip_Pistol をドラッグ&ドロップ
+        
+* 死亡
+    * AM_Death を作成
+        * DefaultGroup.FullBody スロットを(無い場合は作成して)選択する 
+        * Death_1 をドラッグ&ドロップ
+
+

@@ -45,6 +45,11 @@
 
 * ループの設定は、ステートに付けたアニメーションを選択して Detail - Settings - LoopAnimation で行う
 
+* フルボディ
+  * 死亡時アニメーション等のためにフルボディのスロットを最後に追加
+  
+![画像](AnimBP_FullBody.png)
+
 ## 各武器のアニメーションBP を作成
 * ABP_AssaultRifle, ABP_GrenadeLauncher, ABP_Pistol, ABP_RocketLauncher, ABP_Shotgun, ABP_SniperRifle
 * AnimGraph で Slot 'DefaultSlot' ノードを作成して、FinalAnimationPose へ接続

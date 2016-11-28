@@ -17,11 +17,5 @@ public:
 	AShooterPlayerController();
 
 	//!< APlayerController
-	//virtual void UnFreeze() override { Super::UnFreeze(); ServerRestartPlayer(); }
-	virtual void BeginInactiveState() override;
-
-	void Respawn();
-
-protected:
-	FTimerHandle TimerHandle_Respawn;
+	virtual void UnFreeze() override;
 };
