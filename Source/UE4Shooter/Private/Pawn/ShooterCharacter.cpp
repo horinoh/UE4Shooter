@@ -8,6 +8,8 @@
 
 #include "ShooterCharaMovementComponent.h"
 
+#include "Player/ShooterPlayerState.h"
+
 #include "Weapon/WeaponAssaultRifle.h"
 #include "Weapon/WeaponGrenadeLauncher.h"
 #include "Weapon/WeaponPistol.h"
@@ -199,12 +201,20 @@ void AShooterCharacter::SetPlayerDefaults()
 void AShooterCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	UpdateTeamColors();
 }
 void AShooterCharacter::Destroyed()
 {
 	Super::Destroyed();
 
 	DestroyInventory();
+}
+void AShooterCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	UpdateTeamColors();
 }
 
 void AShooterCharacter::Jump()
@@ -233,6 +243,14 @@ bool AShooterCharacter::CanCrouch()
 		}
 	}
 	return false;
+}
+void AShooterCharacter::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+
+	//UpdatePawnMeshes();
+	//SetCurrentWeapon(CurrentWeapon);
+	UpdateTeamColors();
 }
 
 bool AShooterCharacter::CanJump() const
@@ -329,7 +347,7 @@ void AShooterCharacter::Die(float Damage, struct FDamageEvent const& DamageEvent
 			const auto SectionName = FName(TEXT("Default"));
 			PlayAnimMontage(DeathAnimMontage, 1.0f, SectionName);
 			const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
-			return FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+			return FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex) - 0.5f, 0.1f);
 		}
 		return 0.1f;
 	}();
@@ -370,7 +388,8 @@ void AShooterCharacter::SimulateDie()
 			const auto SectionName = FName(TEXT("Default"));
 			PlayAnimMontage(DeathAnimMontage, 1.0f, SectionName);
 			const auto SectionIndex = DeathAnimMontage->GetSectionIndex(SectionName);
-			return FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex), 0.1f);
+			//!< ブレンドで元の位置に戻されないように、アニメーションが終わる少し前にラグドールを起動する
+			return FMath::Max(DeathAnimMontage->GetSectionLength(SectionIndex) - 0.5f, 0.1f);
 		}
 		return 0.1f;
 	}();
@@ -756,6 +775,26 @@ bool AShooterCharacter::ServerEquip_Validate(AShooterWeapon* NewWeapon)
 void AShooterCharacter::ServerEquip_Implementation(AShooterWeapon* NewWeapon)
 {
 	Equip(NewWeapon);
+}
+
+void AShooterCharacter::UpdateTeamColors()
+{
+	const auto PS = Cast<AShooterPlayerState>(PlayerState);
+	if (nullptr != PS)
+	{
+		const TArray<FLinearColor> Colors = {
+			FLinearColor::Red,
+			FLinearColor::Blue,
+			FLinearColor::Green,
+			FLinearColor::Yellow,
+		};
+		const auto TeamNumber = PS->GetTeamNumber();
+		//!< UE4_Mannequin のマテリアルは "BodyColor" がベクタパラメータとして外にに出ている
+		for (const auto i : MaterialInstanceDynamics)
+		{
+			i->SetVectorParameterValue(TEXT("BodyColor"), Colors[TeamNumber]);
+		}
+	}
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

@@ -125,7 +125,28 @@ FVector AShooterWeapon::GetMuzzleLocation() const
 	}
 	return FVector::ZeroVector;
 }
-void AShooterWeapon::GetAim(FVector& Start, FVector& Direction) const
+
+FVector AShooterWeapon::GetAimDirection() const
+{
+	if (nullptr != Instigator)
+	{
+		const auto PC = Cast<APlayerController>(Instigator->GetController());
+		if (nullptr != PC)
+		{
+			FVector Start;
+			FRotator Rot;
+			PC->GetPlayerViewPoint(Start, Rot);
+			return Rot.Vector();
+		}
+		else
+		{
+			const auto AC = Cast<AAIController>(Instigator->GetController());
+			return nullptr != AC ? AC->GetControlRotation().Vector() : Instigator->GetBaseAimRotation().Vector();
+		}
+	}
+	return FVector::ZeroVector;
+}
+void AShooterWeapon::GetAim(FVector& Origin, FVector& Direction) const
 {
 	if (nullptr != Instigator)
 	{
@@ -133,21 +154,14 @@ void AShooterWeapon::GetAim(FVector& Start, FVector& Direction) const
 		if (nullptr != PC)
 		{
 			FRotator Rot;
-			PC->GetPlayerViewPoint(Start, Rot);
+			PC->GetPlayerViewPoint(Origin, Rot);
 			Direction = Rot.Vector();
 		}
 		else
 		{
-			Start = GetMuzzleLocation();
+			Origin = GetMuzzleLocation();
 			const auto AC = Cast<AAIController>(Instigator->GetController());
-			if (nullptr != AC)
-			{
-				Direction = AC->GetControlRotation().Vector();
-			}
-			else
-			{
-				Direction = Instigator->GetBaseAimRotation().Vector();
-			}
+			Direction = nullptr != AC ? AC->GetControlRotation().Vector() : Instigator->GetBaseAimRotation().Vector();
 		}
 	}
 }

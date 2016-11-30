@@ -10,8 +10,11 @@ struct FFireNotify
 {
 	GENERATED_USTRUCT_BODY()
 
-		UPROPERTY()
-		TArray<FVector> EndLocations;
+	UPROPERTY()
+	FVector Origin;
+	
+	UPROPERTY()
+	int32 RandomSeed;
 };
 
 /**
@@ -25,21 +28,14 @@ class UE4SHOOTER_API AShooterWeapon_Instant : public AShooterWeapon
 public:
 	//!< AShooterWeapon
 	virtual void Fire() override;
-	virtual void OnEquipFinished() override;
 
 	void HitConfirmed(const FHitResult& HitResult);
 
-	void Hits(const TArray<FHitResult>& HitResults);
+	void Hits(const FVector Start, const int32 RandomSeed, const TArray<FHitResult>& HitResults);
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerHits(const TArray<FHitResult>& HitResults);
-	virtual bool ServerHits_Validate(const TArray<FHitResult> HitResults);
-	virtual void ServerHits_Implementation(const TArray<FHitResult> HitResults);
-
-	void Misses(const int32 RandomSeed, const uint32 MissResults);
-	UFUNCTION(Unreliable, Server, WithValidation)
-	void ServerMisses(const int32 RandomSeed, const uint32 MissResults);
-	virtual bool ServerMisses_Validate(const int32 RandomSeed, const uint32 MissResults);
-	virtual void ServerMisses_Implementation(const int32 RandomSeed, const uint32 MissResults);
+	void ServerHits(const FVector Start, const int32 RandomSeed, const TArray<FHitResult>& HitResults);
+	virtual bool ServerHits_Validate(const FVector Start, const int32 RandomSeed, const TArray<FHitResult> HitResults);
+	virtual void ServerHits_Implementation(const FVector Start, const int32 RandomSeed, const TArray<FHitResult> HitResults);
 
 	UFUNCTION()
 	void OnRep_FireNotify();

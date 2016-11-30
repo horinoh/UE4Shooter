@@ -13,5 +13,8 @@ class UE4SHOOTER_API AShooterGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
+public:
 	AShooterGameMode();
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 };

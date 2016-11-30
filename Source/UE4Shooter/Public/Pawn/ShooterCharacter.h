@@ -47,11 +47,13 @@ public:
 	virtual void SetPlayerDefaults() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void Destroyed() override;
+	virtual void OnRep_PlayerState() override;
 
 	//!< ACharacter
 	virtual void Jump() override;
 	virtual void Crouch(bool bClientSimulation = false) override;
 	virtual bool CanCrouch() override;
+	virtual void PawnClientRestart() override;
 
 	bool CanJump() const;
 
@@ -135,8 +137,9 @@ public:
 	virtual void ServerEquip_Implementation(AShooterWeapon* NewWeapon);
 	//void SimulateEquip() {}
 
-protected:
+	void UpdateTeamColors();
 
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
