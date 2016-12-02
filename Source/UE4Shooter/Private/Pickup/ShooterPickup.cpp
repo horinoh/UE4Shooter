@@ -5,8 +5,6 @@
 
 #include "UnrealNetwork.h"
 
-#include "Weapon/ShooterWeapon.h"
-
 AShooterPickup::AShooterPickup(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -99,21 +97,6 @@ void AShooterPickup::PickedUp()
 	}
 }
 
-bool AShooterPickup::GiveAmmoTo(AShooterWeapon* Weapon)
-{
-	if (nullptr != Weapon)
-	{
-		const auto AddAmount = Weapon->GiveAmmo(Weapon->GetAmmoMax());
-		if (AddAmount)
-		{
-			DrawDebugString(GetWorld(), GetActorLocation(), TEXT("+ ") + FString::FromInt(AddAmount), nullptr, FColor::Yellow, 5.0f);
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void AShooterPickup::SimulatePickedUp()
 {
 	if (nullptr != StaticMeshComp)
@@ -132,7 +115,7 @@ void AShooterPickup::SimulateRespawn()
 		StaticMeshComp->SetHiddenInGame(false);
 	}
 
-	DrawDebugString(GetWorld(), FVector::UpVector * 50.0f, GetClass()->GetName(), this, FColor::Yellow, FLT_MAX);
+	DrawDebugString(GetWorld(), FVector::UpVector * 50.0f, GetClass()->GetName(), this, FColor::Green, FLT_MAX);
 }
 
 void AShooterPickup::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

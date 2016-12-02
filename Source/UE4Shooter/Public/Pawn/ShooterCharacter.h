@@ -13,20 +13,48 @@ struct FTakeHitInfo
 	GENERATED_BODY()
 
 public:
+	FTakeHitInfo() { GetDamageEvent().DamageTypeClass = PointDamageEvent.DamageTypeClass = RadialDamageEvent.DamageTypeClass = UDamageType::StaticClass(); }
+
+	FDamageEvent& GetDamageEvent() /*const*/
+	{
+		switch (DamageEventClassID)
+		{
+		default: return DamageEvent;
+		case FPointDamageEvent::ClassID: return PointDamageEvent;
+		case FRadialDamageEvent::ClassID: return RadialDamageEvent;
+		}
+	}
+	void SetDamageEvent(const FDamageEvent& val)
+	{
+		DamageEventClassID = val.GetTypeID();
+		switch (DamageEventClassID)
+		{
+		default: DamageEvent = val; break;
+		case FPointDamageEvent::ClassID: PointDamageEvent = static_cast<const FPointDamageEvent&>(val); break;
+		case FRadialDamageEvent::ClassID: RadialDamageEvent = static_cast<const FRadialDamageEvent&>(val); break;
+		}
+	}
+
 	UPROPERTY()
 	float Damage;
 	UPROPERTY()
 	TWeakObjectPtr<class APawn> PawnInstigator;
 	UPROPERTY()
 	TWeakObjectPtr<class AActor> DamageCauser;
+	UPROPERTY()
+	uint8 bKilled : 1;
 
+private:
 	UPROPERTY()
 	int32 DamageEventClassID;
 	UPROPERTY()
 	UClass* DamageTypeClass;
-
 	UPROPERTY()
-	uint8 bKilled : 1;
+	FDamageEvent DamageEvent;
+	UPROPERTY()
+	FPointDamageEvent PointDamageEvent;
+	UPROPERTY()
+	FRadialDamageEvent RadialDamageEvent;
 };
 
 UCLASS()
@@ -41,6 +69,7 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 	virtual void PostInitializeComponents() override;
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void PreReplication(IRepChangedPropertyTracker & ChangedPropertyTracker) override;
 
 	//!< APawn
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -74,9 +103,9 @@ public:
 	FORCEINLINE void Equip2() { Equip(2); }
 	FORCEINLINE void Equip3() { Equip(3); }
 
-	void Hit(float Damage, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
+	void Hit();
 	void SimulateHit();
-	void Die(float Damage, struct FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser);
+	void Die();
 	void SimulateDie();
 	void SetRagdollPhysics();
 	UFUNCTION()
@@ -152,6 +181,7 @@ protected:
 	float Health = 100.0f;
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_TakeHitInfo)
 	struct FTakeHitInfo TakeHitInfo;
+	float TakeHitTime;
 
 	UPROPERTY(Transient, Replicated)
 	uint8 bWantsToSprint : 1;

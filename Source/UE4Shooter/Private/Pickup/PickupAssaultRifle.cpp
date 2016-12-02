@@ -3,7 +3,6 @@
 #include "UE4Shooter.h"
 #include "PickupAssaultRifle.h"
 
-#include "Pawn/ShooterCharacter.h"
 #include "Weapon/WeaponAssaultRifle.h"
 
 APickupAssaultRifle::APickupAssaultRifle(const FObjectInitializer& ObjectInitializer)
@@ -23,18 +22,6 @@ APickupAssaultRifle::APickupAssaultRifle(const FObjectInitializer& ObjectInitial
 	{
 		PickupSoundCue = SC.Object;
 	}
-}
 
-bool APickupAssaultRifle::GiveTo(AActor* OtherActor)
-{
-	const auto Chara = Cast<AShooterCharacter>(OtherActor);
-	if (nullptr != Chara)
-	{
-		auto Weapon = Cast<AWeaponAssaultRifle>(Chara->GetWeapon());
-		if (nullptr != Weapon)
-		{
-			return GiveAmmoTo(Weapon);
-		}
-	}
-	return false;
+	WeaponType = AWeaponAssaultRifle::StaticClass();
 }

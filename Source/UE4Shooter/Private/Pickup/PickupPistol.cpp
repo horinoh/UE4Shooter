@@ -3,7 +3,6 @@
 #include "UE4Shooter.h"
 #include "PickupPistol.h"
 
-#include "Pawn/ShooterCharacter.h"
 #include "Weapon/WeaponPistol.h"
 
 APickupPistol::APickupPistol(const FObjectInitializer& ObjectInitializer)
@@ -23,18 +22,6 @@ APickupPistol::APickupPistol(const FObjectInitializer& ObjectInitializer)
 	{
 		PickupSoundCue = SC.Object;
 	}
-}
 
-bool APickupPistol::GiveTo(AActor* OtherActor)
-{
-	const auto Chara = Cast<AShooterCharacter>(OtherActor);
-	if (nullptr != Chara)
-	{
-		auto Weapon = Cast<AWeaponPistol>(Chara->GetWeapon());
-		if (nullptr != Weapon)
-		{
-			return GiveAmmoTo(Weapon);
-		}
-	}
-	return false;
+	WeaponType = AWeaponPistol::StaticClass();
 }

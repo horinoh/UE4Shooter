@@ -3,7 +3,6 @@
 #include "UE4Shooter.h"
 #include "PickupSniperRifle.h"
 
-#include "Pawn/ShooterCharacter.h"
 #include "Weapon/WeaponSniperRifle.h"
 
 APickupSniperRifle::APickupSniperRifle(const FObjectInitializer& ObjectInitializer)
@@ -23,18 +22,6 @@ APickupSniperRifle::APickupSniperRifle(const FObjectInitializer& ObjectInitializ
 	{
 		PickupSoundCue = SC.Object;
 	}
-}
 
-bool APickupSniperRifle::GiveTo(AActor* OtherActor)
-{
-	const auto Chara = Cast<AShooterCharacter>(OtherActor);
-	if (nullptr != Chara)
-	{
-		auto Weapon = Cast<AWeaponSniperRifle>(Chara->GetWeapon());
-		if (nullptr != Weapon)
-		{
-			return GiveAmmoTo(Weapon);
-		}
-	}
-	return false;
+	WeaponType = AWeaponSniperRifle::StaticClass();
 }

@@ -3,7 +3,6 @@
 #include "UE4Shooter.h"
 #include "PickupRocketLauncher.h"
 
-#include "Pawn/ShooterCharacter.h"
 #include "Weapon/WeaponRocketLauncher.h"
 
 APickupRocketLauncher::APickupRocketLauncher(const FObjectInitializer& ObjectInitializer)
@@ -23,18 +22,6 @@ APickupRocketLauncher::APickupRocketLauncher(const FObjectInitializer& ObjectIni
 	{
 		PickupSoundCue = SC.Object;
 	}
-}
 
-bool APickupRocketLauncher::GiveTo(AActor* OtherActor)
-{
-	const auto Chara = Cast<AShooterCharacter>(OtherActor);
-	if (nullptr != Chara)
-	{
-		auto Weapon = Cast<AWeaponRocketLauncher>(Chara->GetWeapon());
-		if (nullptr != Weapon)
-		{
-			return GiveAmmoTo(Weapon);
-		}
-	}
-	return false;
+	WeaponType = AWeaponRocketLauncher::StaticClass();
 }

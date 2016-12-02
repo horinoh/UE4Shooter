@@ -24,7 +24,6 @@ public:
 	virtual void PickedUp();
 
 	virtual bool GiveTo(AActor* OtherActor) PURE_VIRTUAL(AShooterPickup::GiveTo, return false;);
-	bool GiveAmmoTo(class AShooterWeapon* Weapon);
 
 	virtual void SimulatePickedUp();
 	virtual void SimulateRespawn();
@@ -40,4 +39,7 @@ protected:
 	uint8 bIsActive : 1;
 	
 	FTimerHandle TimerHandle_Respawn;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	TSubclassOf<AShooterWeapon> WeaponType;
 };
