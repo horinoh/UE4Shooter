@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(transient, config = Engine)
 class UE4SHOOTER_API UShooterLocalPlayer : public ULocalPlayer
 {
 	GENERATED_BODY()
@@ -19,7 +19,8 @@ public:
 	virtual void SetControllerId(int32 NewControllerId) override;
 	virtual FString GetNickname() const override;
 
-	class UShooterSaveGame* GetSaveGame() const { return SaveGame; }
+	class UShooterSaveGame* GetSaveGame() const;
+	void LoadSaveGame();
 
 protected:
 	UPROPERTY()

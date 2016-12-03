@@ -7,7 +7,7 @@
 
 void UShooterSaveGame::Save()
 {
-	UGameplayStatics::SaveGameToSlot(this, SlotName, UserIndex);
+	UGameplayStatics::SaveGameToSlot(this, GetSlotName(), GetUserIndex());
 }
 UShooterSaveGame* UShooterSaveGame::Load(const FString& SlotName, const int32 UserIndex)
 {
@@ -23,7 +23,7 @@ UShooterSaveGame* UShooterSaveGame::Load(const FString& SlotName, const int32 Us
 
 		SaveGame->SlotName = SlotName;
 		SaveGame->UserIndex = UserIndex;
-		
+
 		return SaveGame;
 	}
 	return nullptr;
@@ -38,26 +38,30 @@ void UShooterSaveGame::TellInputAboutKeybindings()
 		for (auto It = PlayerControllers.CreateIterator(); It; ++It)
 		{
 			const auto PC = *It;
-			if (nullptr != PC && nullptr != PC->Player)
+			if (nullptr != PC)
 			{
 				const auto LP = Cast<UShooterLocalPlayer>(PC->Player);
-				if (nullptr != LP && this != LP->GetSaveGame())
+				if (nullptr != LP)
 				{
-					if (nullptr != PC->PlayerInput)
+					if (this == LP->GetSaveGame())
 					{
-						for (auto i : PC->PlayerInput->AxisMappings)
+						if (nullptr != PC->PlayerInput)
 						{
-							if ("Lookup" == i.AxisName || "Turn" == i.AxisName)
+							for (auto& i : PC->PlayerInput->AxisMappings)
 							{
-								i.Scale = (i.Scale < 0.0f) ? -GetAimSensitivity() : GetAimSensitivity();
+								if ("Lookup" == i.AxisName || "Turn" == i.AxisName)
+								{
+									i.Scale = (i.Scale < 0.0f) ? -GetAimSensitivity() : GetAimSensitivity();
+								}
+							}
+
+							PC->PlayerInput->ForceRebuildingKeyMaps();
+							if (PC->PlayerInput->GetInvertAxis("Lookup") != GetInvertedYAxis())
+							{
+								PC->PlayerInput->InvertAxis("Lookup");
 							}
 						}
-						
-						PC->PlayerInput->ForceRebuildingKeyMaps();
-						if (PC->PlayerInput->GetInvertAxis("Lookup") != GetInvertedYAxis())
-						{
-							PC->PlayerInput->InvertAxis("Lookup");
-						}
+						break;
 					}
 				}
 			}	

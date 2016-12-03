@@ -6,7 +6,9 @@ public class UE4Shooter : ModuleRules
 {
 	public UE4Shooter(TargetInfo Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore",
+            "AIModule",
+            "OnlineSubsystem", "OnlineSubsystemUtils", });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

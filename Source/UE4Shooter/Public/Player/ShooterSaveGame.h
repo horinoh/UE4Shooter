@@ -15,6 +15,7 @@ class UE4SHOOTER_API UShooterSaveGame : public USaveGame
 	
 public:
 	void Save();
+	FORCEINLINE void SaveIfDirty() { Save(); } //!< #MY_TODO
 	static UShooterSaveGame* Load(const FString& SlotName, const int32 UserIndex);
 	void TellInputAboutKeybindings();
 
@@ -24,9 +25,12 @@ public:
 	FORCEINLINE bool GetInvertedYAxis() const { return bInvertedYAxis; }
 	FORCEINLINE void SetInvertedYAxis(bool val) { bInvertedYAxis = val; }
 
+	const FString& GetSlotName() const { return SlotName; }
+	int32 GetUserIndex() const { return UserIndex; }
+
 protected:
 	UPROPERTY()
-	float AimSensitivity;
+	float AimSensitivity = 1.0f;
 	UPROPERTY()
 	bool bInvertedYAxis;
 	

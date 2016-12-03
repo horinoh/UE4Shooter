@@ -18,4 +18,7 @@ public:
 
 	//!< APlayerController
 	virtual void UnFreeze() override;
+	virtual void InitInputSystem() override;
+	virtual void GameHasEnded(class AActor* EndGameFocus = NULL, bool bIsWinner = false) override;
+	virtual void ClientGameEnded_Implementation(class AActor* EndGameFocus, bool bIsWinner) override;
 };
