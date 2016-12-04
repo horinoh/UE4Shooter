@@ -2,6 +2,8 @@
 
 ## 使用アセット
 
+* Starter Content
+  * エディタから Add New - Add Feature or Content Pack ... を選択してインストール可能
 * Animation Starter Pack
     * https://www.unrealengine.com/marketplace/animation-starter-pack
 * Prototype Weapons
