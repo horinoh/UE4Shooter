@@ -109,7 +109,7 @@ void AShooterProjectile::OnProjectileStop(const FHitResult& HitResult)
 			const auto Location = HitResult.ImpactPoint + HitResult.ImpactNormal * 10.0f;
 			const auto Damage = 100.0f;
 			const auto Radius = 100.0f;
-			UGameplayStatics::ApplyRadialDamage(this, Damage, Location, Radius, /*UShooterDamageType*/UDamageType::StaticClass(), TArray<AActor*>(), this, GetInstigatorController());
+			UGameplayStatics::ApplyRadialDamage(this, Damage, Location, Radius, UShooterDamageType::StaticClass(), TArray<AActor*>(), this, GetInstigatorController());
 
 			if (nullptr != ProjectileMovementComp)
 			{

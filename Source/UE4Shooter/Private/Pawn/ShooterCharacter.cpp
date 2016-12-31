@@ -10,6 +10,8 @@
 
 #include "Player/ShooterPlayerState.h"
 
+#include "Weapon/ShooterDamageType.h"
+
 #include "Weapon/WeaponAssaultRifle.h"
 #include "Weapon/WeaponGrenadeLauncher.h"
 #include "Weapon/WeaponPistol.h"
@@ -147,8 +149,10 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 			const auto RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
 		}
 
-		const auto DamageType = DamageEvent.DamageTypeClass ? DamageEvent.DamageTypeClass->GetDefaultObject<UDamageType>() : GetDefault<UDamageType>();
-		EventInstigator = GetDamageInstigator(EventInstigator, *DamageType);
+		{
+			const auto DamageType = (nullptr != DamageEvent.DamageTypeClass ? DamageEvent.DamageTypeClass->GetDefaultObject<UDamageType>() : GetDefault<UDamageType>());
+			EventInstigator = GetDamageInstigator(EventInstigator, *DamageType);
+		}
 		const auto PawnInstigator = nullptr != EventInstigator ? EventInstigator->GetPawn() : nullptr;
 
 		const auto World = GetWorld();
@@ -172,19 +176,20 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 		TakeHitInfo.DamageCauser = DamageCauser;
 		TakeHitInfo.SetDamageEvent(DamageEvent);
 
-		//!< #MY_TODO フォースフィードバック
+		//!< フォースフィードバック
 		const auto PC = Cast<APlayerController>(GetController());
-		if (nullptr != PC)
+		if (nullptr != PC && nullptr != DamageEvent.DamageTypeClass)
 		{
-			//const auto DamageType = Cast<UShooterDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
-			//if(nullptr != DamageType)
-			//{
-			//	const auto ForceFeedback = TakeHitInfo.bKilled ? DamageType->DamageForceFeedback : DamageType->KilledForceFeedback;
-			//	if (nullptr != ForceFeedback)
-			//	{
-			//		PC->ClientPlayForceFeedback(ForceFeedback, false, TEXT("ForceFeedback"));
-			//	}
-			//}
+			const auto DamageType = Cast<UShooterDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
+			if(nullptr != DamageType)
+			{
+				const auto FFE = TakeHitInfo.bKilled ? DamageType->HitForceFeedbackEffect : DamageType->KilledForceFeedbackEffect;
+				if (nullptr != FFE)
+				{
+					UE_LOG(LogShooter, Log, TEXT("ForceFeedbackEffect\n"));
+					PC->ClientPlayForceFeedback(FFE, false, TEXT("ForceFeedbackEffect"));
+				}
+			}
 		}
 
 		if (TakeHitInfo.bKilled)

@@ -52,7 +52,7 @@ void AShooterWeapon_Instant::HitConfirmed(const FHitResult& HitResult)
 		if (nullptr != Pawn)
 		{
 			FPointDamageEvent DamageEvent;
-			DamageEvent.DamageTypeClass = UDamageType::StaticClass();//UShooterDamageType::StaticClass();
+			DamageEvent.DamageTypeClass = UShooterDamageType::StaticClass();
 			DamageEvent.Damage = 10.0f;
 			DamageEvent.ShotDirection = (HitResult.TraceEnd - HitResult.TraceStart).GetSafeNormal();
 			DamageEvent.HitInfo = HitResult;

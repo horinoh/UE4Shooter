@@ -13,7 +13,10 @@ struct FTakeHitInfo
 	GENERATED_BODY()
 
 public:
-	FTakeHitInfo() { GetDamageEvent().DamageTypeClass = PointDamageEvent.DamageTypeClass = RadialDamageEvent.DamageTypeClass = UDamageType::StaticClass(); }
+	FTakeHitInfo() 
+	{
+		GetDamageEvent().DamageTypeClass = PointDamageEvent.DamageTypeClass = RadialDamageEvent.DamageTypeClass = UDamageType::StaticClass();
+	}
 
 	FDamageEvent& GetDamageEvent() /*const*/
 	{

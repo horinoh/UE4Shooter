@@ -21,21 +21,22 @@
 <!--
 TODO
 
-DamageEvent - FFB
-オンラインサブシステム対応
-軌跡エフェクト対応
-AnimInstance 条件遷移調査
-  立ち - しゃがみ
-  立ち - ほふく(Prone対応する場合)
+○ オンラインサブシステム対応
+○ 軌跡エフェクト対応
+○ AnimInstance 条件遷移調査
+    立ち - しゃがみ
+    立ち - ほふく(Prone対応する場合)
 
-エイム(Ironsight)対応する?
-非専用サーバ対応する？
-Prone 対応する？
-Knife(Melee)対応する？
+○ エイム(Ironsight)対応する?
+○ 非専用サーバ対応する？
+○ Prone 対応する？
+○ Knife(Melee)対応する？
 -->
 
+
+
 <!--
-WIKI 覚書
+○ WIKI 覚書
 
 [リンク](https://github.com/horinoh/UE4Shooter/Document/XXX.md)
 ![画像](Document/XXX.png)
@@ -45,14 +46,13 @@ ___強い強調___
 
 ~~打ち消し~~
 
-コード 
-`void main()`
+`void main()/*コード*/`
 ~~~
+//!< コード
 void main()
 ~~~
 
-テーブル
-| XXX | YYY | ZZZ |
+| テーブル | YYY | ZZZ |
 |:-:|:-:|:-:|
 | aaa | bbb | ccc |
 | ddd | eee | fff |
