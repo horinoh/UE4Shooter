@@ -183,7 +183,7 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 			const auto DamageType = Cast<UShooterDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
 			if(nullptr != DamageType)
 			{
-				const auto FFE = TakeHitInfo.bKilled ? DamageType->HitForceFeedbackEffect : DamageType->KilledForceFeedbackEffect;
+				const auto FFE = TakeHitInfo.bKilled ? DamageType->KilledForceFeedbackEffect : DamageType->HitForceFeedbackEffect;
 				if (nullptr != FFE)
 				{
 					UE_LOG(LogShooter, Log, TEXT("ForceFeedbackEffect\n"));
