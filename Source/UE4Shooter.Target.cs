@@ -8,8 +8,7 @@ public class UE4ShooterTarget : TargetRules
 	public UE4ShooterTarget(TargetInfo Target)
 	{
 		Type = TargetType.Game;
-
-    bUsesSteam = true;
+        bUsesSteam = true;
 	}
 
 	//
