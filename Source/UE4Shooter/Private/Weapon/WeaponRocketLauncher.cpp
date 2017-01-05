@@ -21,10 +21,10 @@ AWeaponRocketLauncher::AWeaponRocketLauncher(const FObjectInitializer& ObjectIni
 		}
 
 		//!< アニメーションブループリント
-		static ConstructorHelpers::FObjectFinder<UAnimBlueprint> ABP(TEXT("AnimBlueprint'/Game/Shooter/Animation/ABP_RocketLauncher.ABP_RocketLauncher'"));
-		if (ABP.Object)
+		static ConstructorHelpers::FObjectFinder<UClass> AnimBP(TEXT("Class'/Game/Shooter/Animation/ABP_RocketLauncher.ABP_RocketLauncher_C'"));
+		if (AnimBP.Succeeded())
 		{
-			SkeletalMeshComp->SetAnimInstanceClass(ABP.Object->GetAnimBlueprintGeneratedClass());
+			SkeletalMeshComp->SetAnimInstanceClass(AnimBP.Object);
 		}
 	}
 

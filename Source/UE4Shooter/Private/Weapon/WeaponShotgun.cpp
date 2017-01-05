@@ -21,10 +21,10 @@ AWeaponShotgun::AWeaponShotgun(const FObjectInitializer& ObjectInitializer)
 		}
 
 		//!< アニメーションブループリント
-		static ConstructorHelpers::FObjectFinder<UAnimBlueprint> ABP(TEXT("AnimBlueprint'/Game/Shooter/Animation/ABP_Shotgun.ABP_Shotgun'"));
-		if (ABP.Object)
+		static ConstructorHelpers::FObjectFinder<UClass> AnimBP(TEXT("Class'/Game/Shooter/Animation/ABP_Shotgun.ABP_Shotgun_C'"));
+		if (AnimBP.Succeeded())
 		{
-			SkeletalMeshComp->SetAnimInstanceClass(ABP.Object->GetAnimBlueprintGeneratedClass());
+			SkeletalMeshComp->SetAnimInstanceClass(AnimBP.Object);
 		}
 	}
 

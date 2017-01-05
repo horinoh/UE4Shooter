@@ -21,10 +21,10 @@ AWeaponSniperRifle::AWeaponSniperRifle(const FObjectInitializer& ObjectInitializ
 		}
 
 		//!< アニメーションブループリント
-		static ConstructorHelpers::FObjectFinder<UAnimBlueprint> ABP(TEXT("AnimBlueprint'/Game/Shooter/Animation/ABP_SniperRifle.ABP_SniperRifle'"));
-		if (ABP.Object)
+		static ConstructorHelpers::FObjectFinder<UClass> AnimBP(TEXT("Class'/Game/Shooter/Animation/ABP_SniperRifle.ABP_SniperRifle_C'"));
+		if (AnimBP.Succeeded())
 		{
-			SkeletalMeshComp->SetAnimInstanceClass(ABP.Object->GetAnimBlueprintGeneratedClass());
+			SkeletalMeshComp->SetAnimInstanceClass(AnimBP.Object);
 		}
 	}
 
