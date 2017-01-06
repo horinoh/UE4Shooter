@@ -143,6 +143,7 @@ public:
 	virtual bool ServerSetAimOffset_Validate(float Yaw, float Pitch);
 	virtual void ServerSetAimOffset_Implementation(float Yaw, float Pitch);
 
+	FORCEINLINE float GetHealth() const { return Health; }
 	float GetHealthMax() const;
 
 	void CreateInventory();

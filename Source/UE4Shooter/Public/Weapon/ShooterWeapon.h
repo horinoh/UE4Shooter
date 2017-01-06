@@ -16,6 +16,12 @@ public:
 	//!< AActor
 	virtual void PostInitializeComponents() override;
 
+	FORCEINLINE bool IsLocallyControlled() const 
+	{ 
+		const auto Pawn = Cast<APawn>(GetOwner());
+		return nullptr != Pawn && Pawn->IsLocallyControlled();
+	}
+
 	FORCEINLINE bool IsEquipping() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_EquipFinished); }
 	virtual void Equip(APawn* NewOwner);
 	virtual void UnEquip();
@@ -32,6 +38,8 @@ public:
 	virtual void GetAim(FVector& Start, FVector& Direction) const;
 	virtual bool LineTraceWeapon(const FVector& Start, const FVector& End, FHitResult& HitResult) const;
 
+	FORCEINLINE int32 GetAmmoInClip() const { return AmmoInClip; }
+	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 	FORCEINLINE virtual int32 GetAmmoPerClip() const { return 6; }
 	FORCEINLINE virtual int32 GetAmmoMax() const { return 3 * GetAmmoPerClip(); }
 	virtual int32 GiveAmmo(const int32 Amount);

@@ -248,13 +248,9 @@ void AShooterWeapon::EndFire()
 	}
 	BurstCounter = 0;
 
-	if (false == HasAuthority())
+	if (!HasAuthority() && IsLocallyControlled())
 	{
-		const auto Pawn = Cast<APawn>(GetOwner());
-		if (nullptr != Pawn && Pawn->IsLocallyControlled())
-		{
-			ServerEndFire();
-		}
+		ServerEndFire();
 	}
 }
 void AShooterWeapon::EndSimulateFire()
@@ -334,7 +330,7 @@ void AShooterWeapon::RepeatFiring()
 				{
 					const auto SectionName = AnimInst->Montage_GetCurrentSection();
 					const auto SectionIndex = OwnerFireAnimMontage->GetSectionIndex(SectionName);
-					const auto Duration = OwnerFireAnimMontage->GetSectionLength(SectionIndex);
+					const auto Duration = FMath::Max(OwnerFireAnimMontage->GetSectionLength(SectionIndex), 0.0f);
 					GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &AShooterWeapon::HandleFiring, Duration, false);
 				}
 			}

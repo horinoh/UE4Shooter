@@ -13,8 +13,8 @@ AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializ
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 
-	SetReplicates(true);
 	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
+	SetReplicates(true);
 	bReplicateMovement = true;
 
 	//!< スフィア
@@ -98,30 +98,29 @@ void AShooterProjectile::PostNetReceiveVelocity(const FVector& NewVelocity)
 
 void AShooterProjectile::OnProjectileStop(const FHitResult& HitResult)
 {
-	if (HasAuthority())
+	if (HasAuthority() && !bExploded)
 	{
-		if (false == bExploded)
+		//!< サーバ側は bExploded を更新する → クライアントでOnRep_Exploded()
+		bExploded = true;
+
+		//!< ダメージ
+		const auto Location = HitResult.ImpactPoint + HitResult.ImpactNormal * 10.0f;
+		const auto Damage = 100.0f;
+		const auto Radius = 100.0f;
+		UGameplayStatics::ApplyRadialDamage(this, Damage, Location, Radius, UShooterDamageType::StaticClass(), TArray<AActor*>(), this, GetInstigatorController());
+
+		if (nullptr != ProjectileMovementComp)
 		{
-			//!< レプリケートされてクライアントで SimulateExplode() がコールされる
-			bExploded = true;
-
-			//!< ダメージ
-			const auto Location = HitResult.ImpactPoint + HitResult.ImpactNormal * 10.0f;
-			const auto Damage = 100.0f;
-			const auto Radius = 100.0f;
-			UGameplayStatics::ApplyRadialDamage(this, Damage, Location, Radius, UShooterDamageType::StaticClass(), TArray<AActor*>(), this, GetInstigatorController());
-
-			if (nullptr != ProjectileMovementComp)
-			{
-				ProjectileMovementComp->StopMovementImmediately();
-			}
-
-			SetLifeSpan(2.0f);
+			ProjectileMovementComp->StopMovementImmediately();
 		}
+
+		SetLifeSpan(2.0f);
 	}
 }
 void AShooterProjectile::OnRep_Exploded()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("OnRep_Exploded"));
+
 	const auto World = GetWorld();
 	if (nullptr != World)
 	{
@@ -145,6 +144,8 @@ void AShooterProjectile::OnRep_Exploded()
 }
 void AShooterProjectile::SimulateExplode(const FHitResult& HitResult)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("SimulateExplode"));
+
 	if (nullptr != StaticMeshComp)
 	{
 		StaticMeshComp->SetHiddenInGame(true);
