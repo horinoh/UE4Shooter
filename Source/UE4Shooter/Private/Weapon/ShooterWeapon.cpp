@@ -282,9 +282,7 @@ void AShooterWeapon::HandleFiring()
 	} 
 	else
 	{
-		//!< ローカルコントロールの場合
-		const auto Pawn = Cast<APawn>(GetOwner());
-		if (nullptr != Pawn && Pawn->IsLocallyControlled())
+		if (IsLocallyControlled())
 		{
 			if (bWantsToFire)
 			{
