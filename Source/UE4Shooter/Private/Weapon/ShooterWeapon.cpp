@@ -330,7 +330,7 @@ void AShooterWeapon::RepeatFiring()
 				{
 					const auto SectionName = AnimInst->Montage_GetCurrentSection();
 					const auto SectionIndex = OwnerFireAnimMontage->GetSectionIndex(SectionName);
-					const auto Duration = FMath::Max(OwnerFireAnimMontage->GetSectionLength(SectionIndex), 0.0f);
+					const auto Duration = FMath::Max(OwnerFireAnimMontage->GetSectionLength(SectionIndex), 0.1f);
 					GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &AShooterWeapon::HandleFiring, Duration, false);
 				}
 			}
