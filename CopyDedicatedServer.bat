@@ -3,14 +3,13 @@
 
 @rem Executable output directory
 @set SRC=Binaries\Win64
+
 @rem Executable file name
-@set EXE=UE4ShooterServer.exe
+@set SERVER=UE4ShooterServer.exe
 
 @rem Cooked data output directory
 @set DST=Package\WindowsNoEditor\UE4Shooter\Binaries\Win64
 
-xcopy %SRC%\%EXE% %DST% /Y
-
-start %DST%\%EXE% -log
+xcopy %SRC%\%SERVER% %DST% /Y
 
 @pause

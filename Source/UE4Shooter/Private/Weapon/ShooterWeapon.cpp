@@ -282,6 +282,13 @@ void AShooterWeapon::HandleFiring()
 	} 
 	else
 	{
+		//!< サーバへ発砲させる
+		if (bWantsToFire)
+		{
+			ServerHandleFiring();
+		}
+
+		//!< ローカルコントロールなら発砲開始 or 終了の処理をする
 		if (IsLocallyControlled())
 		{
 			if (bWantsToFire)
@@ -304,12 +311,6 @@ void AShooterWeapon::HandleFiring()
 				EndSimulateFire();
 				GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
 			}
-		}
-
-		//!< サーバへ発砲させる
-		if (bWantsToFire)
-		{
-			ServerHandleFiring();
 		}
 	}
 }
