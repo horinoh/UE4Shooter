@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "ShooterAIController.generated.h"
 

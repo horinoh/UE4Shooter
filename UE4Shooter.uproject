@@ -14,10 +14,10 @@
 			]
 		}
 	],
-  "Plugins": [
-    {
-      "Name": "OnlineSubsystemSteam",
-      "Enabled": true
-    }
-  ]
+	"Plugins": [
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true
+		}
+	]
 }

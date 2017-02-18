@@ -8,24 +8,24 @@ public class UE4ShooterServerTarget : TargetRules
 	public UE4ShooterServerTarget(TargetInfo Target)
 	{
 		Type = TargetType.Server;
-        bUsesSteam = true;
-    }
+		bUsesSteam = true;
+	}
 
-    //
-    // TargetRules interface.
-    //
+	//
+	// TargetRules interface.
+	//
 
-    public override bool GetSupportedPlatforms(ref List<UnrealTargetPlatform> OutPlatforms)
-    {
-        return UnrealBuildTool.UnrealBuildTool.GetAllServerPlatforms(ref OutPlatforms, false);
-    }
+	//public override bool GetSupportedPlatforms(ref List<UnrealTargetPlatform> OutPlatforms)
+	//{
+	//    return UnrealBuildTool.UnrealBuildTool.GetAllServerPlatforms(ref OutPlatforms, false);
+	//}
 
-    public override void SetupBinaries(
+	public override void SetupBinaries(
 		TargetInfo Target,
 		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
 		ref List<string> OutExtraModuleNames
 		)
 	{
 		OutExtraModuleNames.AddRange( new string[] { "UE4Shooter" } );
-    }
+	}
 }
