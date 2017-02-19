@@ -7,13 +7,12 @@
   * .uproject 右クリック - Generate Visual Studio project files
   * Visual Studio を開いてコンフィギュレーションを Development Server にしてビルド
     * Binaries/Win64/UE4ShooterServer.exe へ実行ファイルが作成される
-  * Visual Studio を開いてコンフィギュレーションを Development Client にしてビルド
-    * Binaries/Win64/UE4Shooter.exe へ実行ファイルが作成される
   * 実行ファイルを**パッケージ化先ディレクトリ**へコピーする
-  * サーバ実行ファイルを起動する
+    * ここでは CopyDedicatedServer.bat を作成したので、これを実行
+  * サーバとクライアントを起動する
+    * ここでは ExecuteDedicatedServerAndClient.bat を作成したので、これを実行
     * -log をつけるとログウィンドウが出る
-  * クライアント実行ファイルを起動する
-    * コンソール(@)から `open 127.0.0.1:7777`。サーバに入れたら成功
+    * クライアントコンソール(@)から `open 127.0.0.1:7777`。サーバに入れたら成功
 
 * DefaultEngine.ini に URLの項目を追加しないとダメ？
 ~~~
