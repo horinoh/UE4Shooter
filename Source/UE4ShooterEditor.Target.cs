@@ -5,21 +5,10 @@ using System.Collections.Generic;
 
 public class UE4ShooterEditorTarget : TargetRules
 {
-	public UE4ShooterEditorTarget(TargetInfo Target)
+	public UE4ShooterEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-	}
 
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.AddRange( new string[] { "UE4Shooter" } );
+		ExtraModuleNames.Add("UE4Shooter");
 	}
 }

@@ -5,27 +5,12 @@ using System.Collections.Generic;
 
 public class UE4ShooterServerTarget : TargetRules
 {
-	public UE4ShooterServerTarget(TargetInfo Target)
+	public UE4ShooterServerTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Server;
+
+		ExtraModuleNames.Add("UE4Shooter");
+
 		bUsesSteam = true;
-	}
-
-	//
-	// TargetRules interface.
-	//
-
-	//public override bool GetSupportedPlatforms(ref List<UnrealTargetPlatform> OutPlatforms)
-	//{
-	//    return UnrealBuildTool.UnrealBuildTool.GetAllServerPlatforms(ref OutPlatforms, false);
-	//}
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.AddRange( new string[] { "UE4Shooter" } );
 	}
 }

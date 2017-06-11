@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class UE4Shooter : ModuleRules
 {
-	public UE4Shooter(TargetInfo Target)
+	public UE4Shooter(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore",
             "AIModule", });
