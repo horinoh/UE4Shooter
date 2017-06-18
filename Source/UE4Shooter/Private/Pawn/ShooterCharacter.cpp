@@ -80,19 +80,28 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 
 		//!< アニメーションBP
 #if 1
-		static ConstructorHelpers::FObjectFinder<UClass> AnimBP(TEXT("Class'/Game/Shooter/Animation/ABP_UE4Mannequin.ABP_UE4Mannequin_C'"));
-		if (AnimBP.Succeeded())
+		static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/Game/Shooter/Animation/ABP_UE4Mannequin"));
+		if (AnimBPClass.Succeeded())
 		{
-			SkelMeshComp->SetAnimInstanceClass(AnimBP.Object);
+			SkelMeshComp->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+			SkelMeshComp->SetAnimInstanceClass(AnimBPClass.Class);
 		}
+		//!< ↓これでもできる
+		//static ConstructorHelpers::FObjectFinder<UClass> AnimBPClass(TEXT("Class'/Game/Shooter/Animation/ABP_UE4Mannequin.ABP_UE4Mannequin_C'"));
+		//if (AnimBPClass.Succeeded())
+		//{
+		//	SkelMeshComp->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+		//	SkelMeshComp->SetAnimInstanceClass(AnimBPClass.Object);
+		//}
 #else
+		//!< ↓このようにはできない
 		//!< BP はエディタ外では必要とされないので BP ではなく直接 Class へアクセスしないとパッケージ化した時に読み込めない
 		//!< https://answers.unrealengine.com/questions/127212/bdontloadblueprintoutsideeditortrue-by-default.html
 		//!< https://answers.unrealengine.com/questions/130256/whats-the-correct-way-to-load-blueprints-for-packa.html
-		static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP(TEXT("AnimBlueprint'/Game/Shooter/Animation/ABP_UE4Mannequin.ABP_UE4Mannequin'"));
-		if (AnimBP.Succeeded())
+		static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBPClass(TEXT("AnimBlueprint'/Game/Shooter/Animation/ABP_UE4Mannequin.ABP_UE4Mannequin'"));
+		if (AnimBPClass.Succeeded())
 		{
-			SkelMeshComp->SetAnimInstanceClass(AnimBP.Object->GetAnimBlueprintGeneratedClass());
+			SkelMeshComp->SetAnimInstanceClass(AnimBPClass.Object->GetAnimBlueprintGeneratedClass());
 		}
 #endif
 	}
