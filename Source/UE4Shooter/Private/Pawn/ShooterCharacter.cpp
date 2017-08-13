@@ -81,18 +81,13 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 		//!< アニメーションBP
 #if 1
 		static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/Game/Shooter/Animation/ABP_UE4Mannequin"));
+		//static ConstructorHelpers::FObjectFinder<UClass> AnimBPClass(TEXT("Class'/Game/Shooter/Animation/ABP_UE4Mannequin.ABP_UE4Mannequin_C'"));
 		if (AnimBPClass.Succeeded())
 		{
 			SkelMeshComp->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 			SkelMeshComp->SetAnimInstanceClass(AnimBPClass.Class);
+			//SkelMeshComp->SetAnimInstanceClass(AnimBPClass.Object);
 		}
-		//!< ↓これでもできる
-		//static ConstructorHelpers::FObjectFinder<UClass> AnimBPClass(TEXT("Class'/Game/Shooter/Animation/ABP_UE4Mannequin.ABP_UE4Mannequin_C'"));
-		//if (AnimBPClass.Succeeded())
-		//{
-		//	SkelMeshComp->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-		//	SkelMeshComp->SetAnimInstanceClass(AnimBPClass.Object);
-		//}
 #else
 		//!< ↓このようにはできない
 		//!< BP はエディタ外では必要とされないので BP ではなく直接 Class へアクセスしないとパッケージ化した時に読み込めない

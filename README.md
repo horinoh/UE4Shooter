@@ -18,8 +18,8 @@
 ## [キャラクタ](https://github.com/horinoh/UE4Shooter/tree/master/Document/Character)
 ## [アニメーション](https://github.com/horinoh/UE4Shooter/tree/master/Document/Animation)
 ## [フォースフィードバック](https://github.com/horinoh/UE4Shooter/tree/master/Document/ForceFeedback)
-## [パッケージ化](https://github.com/horinoh/UE4Shooter/tree/master/Document/Packaging)
-## [専用サーバ](https://github.com/horinoh/UE4Shooter/tree/master/Document/DedicatedServer)
+## [パッケージ化](https://github.com/horinoh/UE4DedicatedServer/tree/master/Document/Packaging)
+## [専用サーバ](https://github.com/horinoh/UE4DedicatedServer/tree/master/Document/DedicatedServer)
 
 <!--
 TODO

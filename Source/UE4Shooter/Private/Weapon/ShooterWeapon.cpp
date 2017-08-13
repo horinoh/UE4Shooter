@@ -109,8 +109,8 @@ void AShooterWeapon::OnEquipFinished()
 			const auto OwnerSkelMeshComp = Chara->GetMesh();
 			if (nullptr != OwnerSkelMeshComp)
 			{
-				//!< AttachTo(), SnapTo() はレプリケートされるが(遅れるのが嫌なので)クライアントでもコールしている
-				SkeletalMeshComp->SnapTo(OwnerSkelMeshComp, TEXT("weapon_r"));
+				//!< AttachComponentTo() はレプリケートされるが(遅れるのが嫌なので)クライアントでもコールしている
+				SkeletalMeshComp->AttachToComponent(OwnerSkelMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("weapon_r"));
 			}
 		}
 	}
