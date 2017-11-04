@@ -202,7 +202,7 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 				if (nullptr != FFE)
 				{
 					UE_LOG(LogShooter, Log, TEXT("ForceFeedbackEffect\n"));
-					PC->ClientPlayForceFeedback(FFE, false, TEXT("ForceFeedbackEffect"));
+					PC->ClientPlayForceFeedback(FFE, false, false, TEXT("ForceFeedbackEffect"));
 				}
 			}
 		}
