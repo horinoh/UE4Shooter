@@ -7,7 +7,8 @@ public class UE4Shooter : ModuleRules
 	public UE4Shooter(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore",
-            "AIModule", });
+            "AIModule",
+            "MoviePlayer",});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
