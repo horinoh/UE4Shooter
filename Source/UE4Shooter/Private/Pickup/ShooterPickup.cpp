@@ -12,12 +12,15 @@ AShooterPickup::AShooterPickup(const FObjectInitializer& ObjectInitializer)
 	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
 
 	auto CapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("CapsuleComp"));
-	CapsuleComp->InitCapsuleSize(20.0f, 30.0f);
-	CapsuleComp->SetCollisionObjectType(ECC_GameTraceChannel_Pickup);
-	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
-	CapsuleComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	RootComponent = CapsuleComp;
+	if (nullptr != CapsuleComp)
+	{
+		CapsuleComp->InitCapsuleSize(20.0f, 30.0f);
+		CapsuleComp->SetCollisionObjectType(ECC_GameTraceChannel_Pickup);
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+		CapsuleComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		RootComponent = CapsuleComp;
+	}
 
 	StaticMeshComp = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMeshComp"));
 	if (nullptr != StaticMeshComp)

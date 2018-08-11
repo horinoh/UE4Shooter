@@ -168,6 +168,30 @@ void AShooterWeapon_Instant::OnRep_FireNotify()
 	}
 }
 
+void AShooterWeapon_Instant::SpawnTrailEffect(const FVector& End)
+{
+	const auto World = GetWorld();
+	if (nullptr != World)
+	{
+		const auto Start = GetMuzzleLocation();
+
+		UParticleSystem* TrailEffect = nullptr;
+		if (nullptr != TrailEffect)
+		{
+			auto TrailComp = UGameplayStatics::SpawnEmitterAtLocation(World, TrailEffect, Start);
+			if (nullptr != TrailComp)
+			{
+				//!< パーティクルに "BeamEnd" という名前のパラメータがある前提
+				TrailComp->SetVectorParameter(FName("BeamEnd"), End);
+			}
+		}
+		else
+		{
+			DrawDebugLine(World, Start, End, FColor::Red, false, 2.0f);
+		}
+	}
+}
+
 void AShooterWeapon_Instant::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

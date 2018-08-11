@@ -35,7 +35,7 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 			SpringArmComp->bUsePawnControlRotation = true;
 			SpringArmComp->SetRelativeLocationAndRotation(FVector(0.0f, 100.0f, 50.0f), FRotator(-20.0f, 0.0f, 0.0f));
 
-			CameraComp = ObjectInitializer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("Camera"));
+			CameraComp = ObjectInitializer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("CameraComp"));
 			if (nullptr != CameraComp)
 			{
 				CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
@@ -384,8 +384,8 @@ void AShooterCharacter::Die()
 }
 void AShooterCharacter::SimulateDie()
 {
-	bTearOff = true;
-	bReplicateMovement = false;
+	TearOff();
+	SetReplicateMovement(false);
 
 	//if (GetNetMode() != NM_DedicatedServer && DeathSound && Mesh1P && Mesh1P->IsVisible())
 	//{

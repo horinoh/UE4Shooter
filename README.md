@@ -1,4 +1,4 @@
-# UE4Shooter
+﻿# UE4Shooter
 
 ## 使用アセット
 
@@ -20,6 +20,28 @@
 ## [フォースフィードバック](https://github.com/horinoh/UE4Shooter/tree/master/Document/ForceFeedback)
 ## [パッケージ化](https://github.com/horinoh/UE4DedicatedServer/tree/master/Document/Packaging)
 ## [専用サーバ](https://github.com/horinoh/UE4DedicatedServer/tree/master/Document/DedicatedServer)
+
+<!--
+Edit - Editor Preference - General - Global - Derived Data - Shared を設定することによりシェーダコンパイルを共有できる
+    http://historia.co.jp/archives/9294/
+
+GenerateProjectFiles.bat で「タスククラスが見つかりません」と怒られる場合
+	VSインストーラ - 変更 - 個別のコンポーネント - コートツール - NuGetパッケージマネージャ
+
+Visual Assist X の設定
+	https://docs.wholetomato.com/default.asp?W804
+UE4用の設定
+    VAssistX - Visual Assist Options - Unreal Engine - Enable supoort for Unreal Engine4 にチェック
+デフォルトのインテリセンスをやめる
+    VAssistX - Visual Assist Options - Enhanced Listboxes - Source of C/C++ content - Visual Assit を選択
+
+nldef.h が無いと言われてコンパイルが通らない
+    vs2015をアンインストールしたせい、vs2017を使用する場合でも、(無駄に)vs2015をインストールしておかないとダメみたい…
+
+Visual Studio(VS)を英語版にする
+    インストーラを起動 - 変更 - 言語パックタブ - 英語にチェック - 変更
+    VSを起動 - ツール - オプション - 環境 - 国際対応の設定 - English - OK - VSを再起動
+-->
 
 <!--
 TODO

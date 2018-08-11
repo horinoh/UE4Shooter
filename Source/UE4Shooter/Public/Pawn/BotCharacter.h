@@ -5,6 +5,8 @@
 #include "Pawn/ShooterCharacter.h"
 #include "BotCharacter.generated.h"
 
+class UPawnSensingComponent;
+
 /**
  * 
  */
@@ -15,4 +17,13 @@ class UE4SHOOTER_API ABotCharacter : public AShooterCharacter
 	
 public:
 	ABotCharacter(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION()
+	void OnPawnSeen(APawn* SeenPawn);
+	UFUNCTION()
+	void OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume);
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = Sensing)
+	UPawnSensingComponent* PawnSensingComp;
 };

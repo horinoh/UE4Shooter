@@ -15,10 +15,10 @@ AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializ
 
 	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
 	SetReplicates(true);
-	bReplicateMovement = true;
+	SetReplicateMovement(true);
 
 	//!< スフィア
-	SphereComp = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, "SphereComp");
+	SphereComp = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("SphereComp"));
 	if (nullptr != SphereComp)
 	{
 		SphereComp->InitSphereRadius(5.0f);
@@ -38,7 +38,7 @@ AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializ
 	}
 
 	//!< メッシュ
-	StaticMeshComp = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, "StaticMeshComp");
+	StaticMeshComp = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMeshComp"));
 	if (nullptr != StaticMeshComp)
 	{
 		//!< メッシュ自体のコリジョンは無し
@@ -50,7 +50,7 @@ AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializ
 	}
 
 	//!< プロジェクタイル
-	ProjectileMovementComp = ObjectInitializer.CreateDefaultSubobject<UProjectileMovementComponent>(this, "ProjectileMovementComp");
+	ProjectileMovementComp = ObjectInitializer.CreateDefaultSubobject<UProjectileMovementComponent>(this, TEXT("ProjectileMovementComp"));
 	if (nullptr != ProjectileMovementComp)
 	{
 		ProjectileMovementComp->InitialSpeed = 2000.0f;
@@ -77,7 +77,7 @@ void AShooterProjectile::PostInitializeComponents()
 	}
 	if (nullptr != ProjectileMovementComp)
 	{
-		ProjectileMovementComp->OnProjectileStop.AddDynamic(this, &AShooterProjectile::OnProjectileStop);
+		ProjectileMovementComp->OnProjectileStop.AddDynamic(this, &AShooterProjectile::OnProjectileStop); //!< Do not AddDynamic() in constructor
 	}
 	if (nullptr != TrailParticle)
 	{
