@@ -7,8 +7,7 @@
 
 #include "ShooterImpactEffect.h"
 
-AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AShooterProjectile::AShooterProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
@@ -18,7 +17,7 @@ AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializ
 	SetReplicateMovement(true);
 
 	//!< スフィア
-	SphereComp = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("SphereComp"));
+	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	if (nullptr != SphereComp)
 	{
 		SphereComp->InitSphereRadius(5.0f);
@@ -38,7 +37,7 @@ AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializ
 	}
 
 	//!< メッシュ
-	StaticMeshComp = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMeshComp"));
+	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
 	if (nullptr != StaticMeshComp)
 	{
 		//!< メッシュ自体のコリジョンは無し
@@ -50,7 +49,7 @@ AShooterProjectile::AShooterProjectile(const FObjectInitializer& ObjectInitializ
 	}
 
 	//!< プロジェクタイル
-	ProjectileMovementComp = ObjectInitializer.CreateDefaultSubobject<UProjectileMovementComponent>(this, TEXT("ProjectileMovementComp"));
+	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComp"));
 	if (nullptr != ProjectileMovementComp)
 	{
 		ProjectileMovementComp->InitialSpeed = 2000.0f;

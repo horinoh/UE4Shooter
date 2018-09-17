@@ -14,5 +14,5 @@ class UE4SHOOTER_API APickupAssaultRifle : public AShooterPickup_Ammo
 	GENERATED_BODY()
 	
 public:
-	APickupAssaultRifle(const FObjectInitializer& ObjectInitializer);
+	APickupAssaultRifle();
 };

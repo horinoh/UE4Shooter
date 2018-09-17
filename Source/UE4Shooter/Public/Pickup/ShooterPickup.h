@@ -11,7 +11,7 @@ class UE4SHOOTER_API AShooterPickup : public AActor
 	GENERATED_BODY()
 	
 public:	
-	AShooterPickup(const FObjectInitializer& ObjectInitializer);
+	AShooterPickup();
 
 	//!< AActor
 	virtual void BeginPlay() override;

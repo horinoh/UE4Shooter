@@ -5,8 +5,7 @@
 
 #include "Weapon/WeaponAssaultRifle.h"
 
-APickupAssaultRifle::APickupAssaultRifle(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+APickupAssaultRifle::APickupAssaultRifle()
 {
 	if (nullptr != StaticMeshComp)
 	{

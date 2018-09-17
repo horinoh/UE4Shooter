@@ -14,5 +14,5 @@ class UE4SHOOTER_API APickupPistol : public AShooterPickup_Ammo
 	GENERATED_BODY()
 	
 public:
-	APickupPistol(const FObjectInitializer& ObjectInitializer);
+	APickupPistol();
 };

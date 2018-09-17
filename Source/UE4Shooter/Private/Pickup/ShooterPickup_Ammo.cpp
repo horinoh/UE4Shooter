@@ -6,8 +6,7 @@
 #include "Weapon/ShooterWeapon.h"
 #include "Pawn/ShooterCharacter.h"
 
-AShooterPickup_Ammo::AShooterPickup_Ammo(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AShooterPickup_Ammo::AShooterPickup_Ammo()
 {
 }
 

@@ -3,8 +3,7 @@
 #include "UE4Shooter.h"
 #include "ShooterDamageType.h"
 
-UShooterDamageType::UShooterDamageType(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+UShooterDamageType::UShooterDamageType()
 {
 	static ConstructorHelpers::FObjectFinder<UForceFeedbackEffect> FFE_Hit(TEXT("ForceFeedbackEffect'/Game/Shooter/Forcefeedback/FFE_Hit.FFE_Hit'"));
 	HitForceFeedbackEffect = FFE_Hit.Object;

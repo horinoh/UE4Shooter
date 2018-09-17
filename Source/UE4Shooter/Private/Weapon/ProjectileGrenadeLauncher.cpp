@@ -5,8 +5,7 @@
 
 #include "ImpactEffectGrenadeLauncher.h"
 
-AProjectileGrenadeLauncher::AProjectileGrenadeLauncher(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 {
 	if (nullptr != StaticMeshComp)
 	{

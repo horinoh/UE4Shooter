@@ -15,7 +15,7 @@ class UE4SHOOTER_API AShooterAIController : public AAIController
 	GENERATED_BODY()
 	
 public:	
-	AShooterAIController(const FObjectInitializer& ObjectInitializer);
+	AShooterAIController();
 
 	//!< AController
 	virtual void BeginInactiveState() override;

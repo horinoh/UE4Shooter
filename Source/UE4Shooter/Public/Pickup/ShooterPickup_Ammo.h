@@ -14,7 +14,7 @@ class UE4SHOOTER_API AShooterPickup_Ammo : public AShooterPickup
 	GENERATED_BODY()
 
 public:
-	AShooterPickup_Ammo(const FObjectInitializer& ObjectInitializer);
+	AShooterPickup_Ammo();
 
 	//!< AShooterPickup
 	virtual bool GiveTo(AActor* OtherActor) override;

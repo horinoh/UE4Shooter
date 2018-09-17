@@ -13,7 +13,7 @@ class UE4SHOOTER_API AWeaponSniperRifle : public AShooterWeapon_Instant
 {
 	GENERATED_BODY()
 
-	AWeaponSniperRifle(const FObjectInitializer& FObjectInitializer);
+	AWeaponSniperRifle();
 
 	//!< AShooterWeapon
 	FORCEINLINE virtual float GetTargetingFOV() const { return 30.0f; }

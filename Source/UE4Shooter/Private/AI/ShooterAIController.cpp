@@ -9,13 +9,12 @@
 
 #include "Pawn/BotCharacter.h"
 
-AShooterAIController::AShooterAIController(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AShooterAIController::AShooterAIController()
 {
 	bWantsPlayerState = true;
 
-	BlackboardComp = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackBoardComp"));
-	BehaviorTreeComp = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviorTreeComp"));
+	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoardComp"));
+	BehaviorTreeComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
 }
 
 void AShooterAIController::BeginInactiveState()

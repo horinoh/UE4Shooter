@@ -5,8 +5,7 @@
 
 #include "Weapon/WeaponShotgun.h"
 
-APickupShotgun::APickupShotgun(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+APickupShotgun::APickupShotgun()
 {
 	if (nullptr != StaticMeshComp)
 	{

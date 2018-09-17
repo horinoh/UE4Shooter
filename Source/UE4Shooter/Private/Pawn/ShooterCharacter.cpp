@@ -28,14 +28,14 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 	if (nullptr != CapsuleComp)
 	{
 		//!< ƒJƒƒ‰
-		SpringArmComp = ObjectInitializer.CreateDefaultSubobject<USpringArmComponent>(this, TEXT("SpringArmComp"));
+		SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 		if (nullptr != SpringArmComp)
 		{
 			SpringArmComp->SetupAttachment(CapsuleComp);
 			SpringArmComp->bUsePawnControlRotation = true;
 			SpringArmComp->SetRelativeLocationAndRotation(FVector(0.0f, 100.0f, 50.0f), FRotator(-20.0f, 0.0f, 0.0f));
 
-			CameraComp = ObjectInitializer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("CameraComp"));
+			CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 			if (nullptr != CameraComp)
 			{
 				CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);

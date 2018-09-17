@@ -8,8 +8,7 @@
 
 #include "ProjectileRocketLauncher.h"
 
-AWeaponRocketLauncher::AWeaponRocketLauncher(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AWeaponRocketLauncher::AWeaponRocketLauncher()
 {
 	if (nullptr != SkeletalMeshComp)
 	{
@@ -72,7 +71,7 @@ AWeaponRocketLauncher::AWeaponRocketLauncher(const FObjectInitializer& ObjectIni
 	ProjectileClass = AProjectileRocketLauncher::StaticClass();
 
 	//!< (æ’[‚É‚Â‚¢‚Ä‚¢‚é)Œ©‚½–Ú‚¾‚¯‚Ì’e
-	StaticMeshComp = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMeshComp"));
+	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
 	if (nullptr != StaticMeshComp)
 	{
 		StaticMeshComp->bReceivesDecals = false;

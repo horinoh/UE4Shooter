@@ -5,8 +5,7 @@
 
 #include "Weapon/WeaponGrenadeLauncher.h"
 
-APickupGrenadeLauncher::APickupGrenadeLauncher(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+APickupGrenadeLauncher::APickupGrenadeLauncher()
 {
 	if (nullptr != StaticMeshComp)
 	{

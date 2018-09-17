@@ -5,8 +5,7 @@
 
 #include "Weapon/WeaponRocketLauncher.h"
 
-APickupRocketLauncher::APickupRocketLauncher(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+APickupRocketLauncher::APickupRocketLauncher()
 {
 	if (nullptr != StaticMeshComp)
 	{

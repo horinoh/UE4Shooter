@@ -14,5 +14,5 @@ class UE4SHOOTER_API APickupGrenadeLauncher : public AShooterPickup_Ammo
 	GENERATED_BODY()
 	
 public:
-	APickupGrenadeLauncher(const FObjectInitializer& ObjectInitializer);
+	APickupGrenadeLauncher();
 };

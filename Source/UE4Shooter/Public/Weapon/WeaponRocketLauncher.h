@@ -14,7 +14,7 @@ class UE4SHOOTER_API AWeaponRocketLauncher : public AShooterWeapon_Projectile
 	GENERATED_BODY()
 
 public:
-	AWeaponRocketLauncher(const FObjectInitializer& ObjectInitializer);
+	AWeaponRocketLauncher();
 
 	//!< AActor
 	virtual void PostInitializeComponents() override;

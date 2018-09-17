@@ -5,13 +5,12 @@
 
 #include "UnrealNetwork.h"
 
-AShooterPickup::AShooterPickup(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AShooterPickup::AShooterPickup()
 {
 	SetReplicates(true);
 	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
 
-	auto CapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("CapsuleComp"));
+	auto CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComp"));
 	if (nullptr != CapsuleComp)
 	{
 		CapsuleComp->InitCapsuleSize(20.0f, 30.0f);
@@ -22,7 +21,7 @@ AShooterPickup::AShooterPickup(const FObjectInitializer& ObjectInitializer)
 		RootComponent = CapsuleComp;
 	}
 
-	StaticMeshComp = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMeshComp"));
+	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComp"));
 	if (nullptr != StaticMeshComp)
 	{
 		StaticMeshComp->bReceivesDecals = false;

@@ -8,8 +8,7 @@
 #include "Animation/AnimInstance.h"
 #include "AIController.h"
 
-AShooterWeapon::AShooterWeapon(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AShooterWeapon::AShooterWeapon()
 {
 	//PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
@@ -18,7 +17,7 @@ AShooterWeapon::AShooterWeapon(const FObjectInitializer& ObjectInitializer)
 	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
 	bNetUseOwnerRelevancy = true;
 
-	SkeletalMeshComp = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("SkeletalMeshComp"));
+	SkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComp"));
 	if (nullptr != SkeletalMeshComp)
 	{
 		SkeletalMeshComp->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
@@ -75,6 +74,10 @@ void AShooterWeapon::Equip(APawn* NewOwner)
 			const auto Duration = FMath::Max(Chara->PlayAnimMontage(OwnerEquipAnimMontage), 0.1f);
 			GetWorldTimerManager().SetTimer(TimerHandle_EquipFinished, this, &AShooterWeapon::OnEquipFinished, Duration, false);
 		}
+	}
+	else 
+	{
+		OnEquipFinished();
 	}
 }
 void AShooterWeapon::UnEquip()

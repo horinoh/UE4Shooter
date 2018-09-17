@@ -14,7 +14,7 @@ class UE4SHOOTER_API UShooterDamageType : public UDamageType
 	GENERATED_BODY()
 
 public:
-	UShooterDamageType(const FObjectInitializer& ObjectInitializer);
+	UShooterDamageType();
 
 	//UPROPERTY(EditDefaultsOnly, Category = HUD)
 	//FCanvasIcon KillIcon;

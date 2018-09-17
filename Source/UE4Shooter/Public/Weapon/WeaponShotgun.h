@@ -13,7 +13,7 @@ class UE4SHOOTER_API AWeaponShotgun : public AShooterWeapon_Instant
 {
 	GENERATED_BODY()
 
-	AWeaponShotgun(const FObjectInitializer& ObjectInitializer);
+	AWeaponShotgun();
 
 	//!< AShooterWeapon
 	FORCEINLINE virtual float GetSpreadAngle() const override { return 10.0f; }

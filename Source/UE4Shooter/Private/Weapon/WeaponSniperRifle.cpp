@@ -8,8 +8,7 @@
 
 #include "ImpactEffectSniperRifle.h"
 
-AWeaponSniperRifle::AWeaponSniperRifle(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AWeaponSniperRifle::AWeaponSniperRifle()
 {
 	if (nullptr != SkeletalMeshComp)
 	{

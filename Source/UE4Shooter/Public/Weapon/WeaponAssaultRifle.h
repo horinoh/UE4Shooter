@@ -13,5 +13,5 @@ class UE4SHOOTER_API AWeaponAssaultRifle : public AShooterWeapon_Instant
 {
 	GENERATED_BODY()
 
-	AWeaponAssaultRifle(const FObjectInitializer& FObjectInitializer);
+	AWeaponAssaultRifle();
 };

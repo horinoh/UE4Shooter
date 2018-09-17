@@ -8,8 +8,7 @@
 
 #include "ImpactEffectShotgun.h"
 
-AWeaponShotgun::AWeaponShotgun(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AWeaponShotgun::AWeaponShotgun()
 {
 	if (nullptr != SkeletalMeshComp)
 	{

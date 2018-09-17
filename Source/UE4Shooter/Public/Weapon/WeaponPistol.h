@@ -13,5 +13,5 @@ class UE4SHOOTER_API AWeaponPistol : public AShooterWeapon_Instant
 {
 	GENERATED_BODY()
 
-	AWeaponPistol(const FObjectInitializer& ObjectInitializer);
+	AWeaponPistol();
 };

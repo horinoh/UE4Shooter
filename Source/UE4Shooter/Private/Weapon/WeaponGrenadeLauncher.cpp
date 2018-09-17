@@ -8,8 +8,7 @@
 
 #include "ProjectileGrenadeLauncher.h"
 
-AWeaponGrenadeLauncher::AWeaponGrenadeLauncher(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AWeaponGrenadeLauncher::AWeaponGrenadeLauncher()
 {
 	if (nullptr != SkeletalMeshComp)
 	{

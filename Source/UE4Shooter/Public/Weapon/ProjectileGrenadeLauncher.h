@@ -14,5 +14,5 @@ class UE4SHOOTER_API AProjectileGrenadeLauncher : public AShooterProjectile
 	GENERATED_BODY()
 	
 public:
-	AProjectileGrenadeLauncher(const FObjectInitializer& ObjectInitializer);
+	AProjectileGrenadeLauncher();
 };

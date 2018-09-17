@@ -5,8 +5,7 @@
 
 #include "ImpactEffectRocketLauncher.h"
 
-AProjectileRocketLauncher::AProjectileRocketLauncher(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+AProjectileRocketLauncher::AProjectileRocketLauncher()
 {
 	if (nullptr != StaticMeshComp)
 	{

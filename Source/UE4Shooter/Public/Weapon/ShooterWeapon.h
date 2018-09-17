@@ -11,7 +11,7 @@ class UE4SHOOTER_API AShooterWeapon : public AActor
 	GENERATED_BODY()
 	
 public:	
-	AShooterWeapon(const FObjectInitializer& ObjectInitializer);
+	AShooterWeapon();
 
 	//!< AActor
 	virtual void PostInitializeComponents() override;
