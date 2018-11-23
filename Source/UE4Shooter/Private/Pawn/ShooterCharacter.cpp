@@ -67,7 +67,7 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 		SkelMeshComp->SetRelativeLocationAndRotation(FVector::UpVector * -90.0f, FRotator(0.0f, -90.0f, 0.0f));
 		
 		//!< AlwaysTickPose は描画されていないと更新されないので DedicateServer では更新されない、AlwaysTickPoseAndRefreshBones にすると描画されていなくても更新される
-		SkelMeshComp->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
+		SkelMeshComp->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 		SkelMeshComp->bReceivesDecals = false;
 
@@ -796,7 +796,7 @@ void AShooterCharacter::ServerEquip_Implementation(AShooterWeapon* NewWeapon)
 
 void AShooterCharacter::UpdateTeamColors()
 {
-	const auto PS = Cast<AShooterPlayerState>(PlayerState);
+	const auto PS = Cast<AShooterPlayerState>(GetPlayerState());
 	if (nullptr != PS)
 	{
 		const TArray<FLinearColor> Colors = {

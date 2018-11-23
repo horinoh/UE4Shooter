@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Weapon/ShooterWeapon.h"
+#include "Weapon/ShooterImpactEffect.h"
 #include "ShooterWeapon_Instant.generated.h"
 
 USTRUCT()

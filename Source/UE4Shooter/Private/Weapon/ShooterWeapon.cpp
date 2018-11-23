@@ -8,6 +8,8 @@
 #include "Animation/AnimInstance.h"
 #include "AIController.h"
 
+#include "Weapon/ShooterImpactEffect.h"
+
 AShooterWeapon::AShooterWeapon()
 {
 	//PrimaryActorTick.bCanEverTick = true;
@@ -20,7 +22,7 @@ AShooterWeapon::AShooterWeapon()
 	SkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComp"));
 	if (nullptr != SkeletalMeshComp)
 	{
-		SkeletalMeshComp->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+		SkeletalMeshComp->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 		SkeletalMeshComp->bReceivesDecals = false;
 
 		//!< シャドウマップ視錐台をまとめる
@@ -238,7 +240,7 @@ void AShooterWeapon::StartSimulateFire()
 		{
 			if (nullptr != FireAnimSequence)
 			{
-				AnimInst->PlaySlotAnimationAsDynamicMontage(FireAnimSequence, TEXT("DefaultSlot"));
+				AnimInst->PlaySlotAnimationAsDynamicMontage(reinterpret_cast<UAnimSequenceBase*>(FireAnimSequence), TEXT("DefaultSlot"));
 			}
 		}
 	}
@@ -411,7 +413,7 @@ float AShooterWeapon::StartSimulateReload()
 		if (nullptr != AnimInst)
 		{
 			const auto SlotName = TEXT("DefaultSlot");
-			AnimInst->PlaySlotAnimationAsDynamicMontage(ReloadAnimSequence, SlotName);
+			AnimInst->PlaySlotAnimationAsDynamicMontage(reinterpret_cast<UAnimSequenceBase*>(ReloadAnimSequence), SlotName);
 		}
 	}
 

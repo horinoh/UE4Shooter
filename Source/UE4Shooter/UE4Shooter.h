@@ -4,7 +4,7 @@
 
 #include "Engine.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogShooter, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogShooter, Log, All)
 
 #define ECC_GameTraceChannel_WeaponProjectile	ECC_GameTraceChannel1
 #define ECC_GameTraceChannel_Pickup				ECC_GameTraceChannel2

@@ -10,6 +10,8 @@ public class UE4Shooter : ModuleRules
             "AIModule",
             "MoviePlayer",});
 
+        PrivatePCHHeaderFile = "UE4Shooter.h";
+
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
         // Uncomment if you are using Slate UI

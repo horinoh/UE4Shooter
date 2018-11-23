@@ -55,7 +55,7 @@ AWeaponAssaultRifle::AWeaponAssaultRifle()
 		ReloadAnimSequence = ReloadAS.Object;
 	}
 
-	//!< エイム音
+	//!< エイム、エイム解除音
 	static ConstructorHelpers::FObjectFinder<USoundCue> RaiseSC(TEXT("SoundCue'/Game/PrototypeWeap/Sound/Rifle/Rifle_Raise_Cue.Rifle_Raise_Cue'"));
 	if (RaiseSC.Succeeded())
 	{
