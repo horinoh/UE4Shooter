@@ -47,31 +47,30 @@ void AShooterAIController::GameHasEnded(class AActor* EndGameFocus, bool bIsWinn
 
 	GetWorldTimerManager().ClearTimer(TimerHandle_Respawn);
 }
-void AShooterAIController::Possess(APawn* InPawn)
+void AShooterAIController::OnPossess(APawn* InPawn)
 {
-	Super::Possess(InPawn);
-
-	//!< #MY_TODO
-	//const auto Chara = Cast<ABotCharacter>(InPawn);
-	//if (nullptr != Chara)
-	//{
-	//	const auto BT = Chara->GetBehaviorTree();
-	//	if (nullptr != BT)
-	//	{
-	//		if (nullptr != BlackboardComp)
-	//		{
-	//			BlackboardComp->InitializeBlackboard(*BT->BlackboardAsset);
-	//		}
-	//		if (nullptr != BehaviorTreeComp)
-	//		{
-	//			BehaviorTreeComp->StartTree(*BT);
-	//		}
-	//	}
-	//}
+	Super::OnPossess(InPawn);
+//!< #MY_TODO
+//const auto Chara = Cast<ABotCharacter>(InPawn);
+//if (nullptr != Chara)
+//{
+//	const auto BT = Chara->GetBehaviorTree();
+//	if (nullptr != BT)
+//	{
+//		if (nullptr != BlackboardComp)
+//		{
+//			BlackboardComp->InitializeBlackboard(*BT->BlackboardAsset);
+//		}
+//		if (nullptr != BehaviorTreeComp)
+//		{
+//			BehaviorTreeComp->StartTree(*BT);
+//		}
+//	}
+//}
 }
-void AShooterAIController::UnPossess()
+void AShooterAIController::OnUnPossess()
 {
-	Super::UnPossess();
+	Super::OnUnPossess();
 
 	if (nullptr != BehaviorTreeComp)
 	{

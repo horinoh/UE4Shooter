@@ -41,6 +41,17 @@ nldef.h が無いと言われてコンパイルが通らない
 Visual Studio(VS)を英語版にする
     インストーラを起動 - 変更 - 言語パックタブ - 英語にチェック - 変更
     VSを起動 - ツール - オプション - 環境 - 国際対応の設定 - English - OK - VSを再起動
+
+GenerateProjectFiles.bat 次のようにで怒られる ".NETFramework,Version=v4.6.2" の参照アセンブリが見つかりませんでした。
+    VisualStudioインストーラ - 変更からインストールする
+    .NET desktop development にチェックが入っていても、右側の 4.6.2 にチェックが入っていないとダメなので注意
+
+UE4初期設定でやること
+    Edit - Editor Preference - General
+        Region & Language : 言語を英語にする
+        Misclleraneous - Hot Reload - Automatically Compile Newly...のチェックを外す
+        Global - Derived Data - Shared Derived Data Cache : フォルダを指定する
+        Live Coding - Enable Live Codingにチェックを入れる
 -->
 
 <!--

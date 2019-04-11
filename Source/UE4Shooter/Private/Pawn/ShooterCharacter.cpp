@@ -202,7 +202,12 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 				if (nullptr != FFE)
 				{
 					UE_LOG(LogShooter, Log, TEXT("ForceFeedbackEffect\n"));
-					PC->ClientPlayForceFeedback(FFE, false, false, TEXT("ForceFeedbackEffect"));
+					FForceFeedbackParameters Params;
+					Params.Tag = TEXT("ForceFeedbackEffect");
+					//Params.bLooping = false;
+					//Params.bIgnoreTimeDilation = false;
+					//Params.bPlayWhilePaused = false;
+					PC->ClientPlayForceFeedback(FFE, Params);
 				}
 			}
 		}

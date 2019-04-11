@@ -20,8 +20,8 @@ public:
 	//!< AController
 	virtual void BeginInactiveState() override;
 	virtual void GameHasEnded(class AActor* EndGameFocus = NULL, bool bIsWinner = false) override;
-	virtual void Possess(APawn* InPawn) override;
-	virtual void UnPossess() override;
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 
 	void Respawn();
 

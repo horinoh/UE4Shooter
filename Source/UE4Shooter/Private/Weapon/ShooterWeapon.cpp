@@ -177,7 +177,7 @@ bool AShooterWeapon::LineTraceWeapon(const FVector& Start, const FVector& End, F
 	if (nullptr != World)
 	{
 		FCollisionQueryParams Params(TEXT("FireTag"), true, Instigator);
-		Params.bTraceAsyncScene = true;
+		//Params.bTraceAsyncScene = true;
 		Params.bReturnPhysicalMaterial = true;
 		return World->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel_WeaponInstant, Params);
 	}
