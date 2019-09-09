@@ -301,7 +301,7 @@ void AShooterCharacter::Crouch(bool bClientSimulation)
 	}
 }
 
-bool AShooterCharacter::CanCrouch()
+bool AShooterCharacter::CanCrouch() const
 {
 	if (Super::CanCrouch())
 	{

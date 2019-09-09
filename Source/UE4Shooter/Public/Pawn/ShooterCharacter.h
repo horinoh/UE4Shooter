@@ -84,7 +84,7 @@ public:
 	//!< ACharacter
 	virtual void Jump() override;
 	virtual void Crouch(bool bClientSimulation = false) override;
-	virtual bool CanCrouch() override;
+	virtual bool CanCrouch() const override;
 	virtual void PawnClientRestart() override;
 
 	bool CanJump() const;
