@@ -629,7 +629,7 @@ void AShooterCharacter::CreateInventory()
 					if (nullptr != Weapon)
 					{
 						//!< Instigator はこのアクタによって引き起こされるダメージの責任者
-						Weapon->Instigator = this;
+						Weapon->SetInstigator(this);
 						//!< 主にレプリケーションの為にオーナを指定
 						Weapon->SetOwner(this);
 

@@ -63,7 +63,7 @@ void AShooterWeapon::PostInitializeComponents()
 void AShooterWeapon::Equip(APawn* NewOwner)
 {
 	//!< Instigator はこのアクタによって引き起こされるダメージの責任者
-	Instigator = NewOwner;
+	SetInstigator(NewOwner);
 	//!< 主にレプリケーションの為にオーナを指定
 	SetOwner(NewOwner);
 
@@ -133,9 +133,10 @@ FVector AShooterWeapon::GetMuzzleLocation() const
 
 FVector AShooterWeapon::GetAimDirection() const
 {
-	if (nullptr != Instigator)
+	const auto Instg = GetInstigator();
+	if (nullptr != Instg)
 	{
-		const auto PC = Cast<APlayerController>(Instigator->GetController());
+		const auto PC = Cast<APlayerController>(Instg->GetController());
 		if (nullptr != PC)
 		{
 			FVector Start;
@@ -145,17 +146,18 @@ FVector AShooterWeapon::GetAimDirection() const
 		}
 		else
 		{
-			const auto AC = Cast<AAIController>(Instigator->GetController());
-			return nullptr != AC ? AC->GetControlRotation().Vector() : Instigator->GetBaseAimRotation().Vector();
+			const auto AC = Cast<AAIController>(Instg->GetController());
+			return nullptr != AC ? AC->GetControlRotation().Vector() : Instg->GetBaseAimRotation().Vector();
 		}
 	}
 	return FVector::ZeroVector;
 }
 void AShooterWeapon::GetAim(FVector& Origin, FVector& Direction) const
 {
-	if (nullptr != Instigator)
+	const auto Instg = GetInstigator();
+	if (nullptr != Instg)
 	{
-		const auto PC = Cast<APlayerController>(Instigator->GetController());
+		const auto PC = Cast<APlayerController>(Instg->GetController());
 		if (nullptr != PC)
 		{
 			FRotator Rot;
@@ -165,8 +167,8 @@ void AShooterWeapon::GetAim(FVector& Origin, FVector& Direction) const
 		else
 		{
 			Origin = GetMuzzleLocation();
-			const auto AC = Cast<AAIController>(Instigator->GetController());
-			Direction = nullptr != AC ? AC->GetControlRotation().Vector() : Instigator->GetBaseAimRotation().Vector();
+			const auto AC = Cast<AAIController>(Instg->GetController());
+			Direction = nullptr != AC ? AC->GetControlRotation().Vector() : Instg->GetBaseAimRotation().Vector();
 		}
 	}
 }
@@ -176,7 +178,7 @@ bool AShooterWeapon::LineTraceWeapon(const FVector& Start, const FVector& End, F
 	const auto World = GetWorld();
 	if (nullptr != World)
 	{
-		FCollisionQueryParams Params(TEXT("FireTag"), true, Instigator);
+		FCollisionQueryParams Params(TEXT("FireTag"), true, GetInstigator());
 		//Params.bTraceAsyncScene = true;
 		Params.bReturnPhysicalMaterial = true;
 		return World->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel_WeaponInstant, Params);

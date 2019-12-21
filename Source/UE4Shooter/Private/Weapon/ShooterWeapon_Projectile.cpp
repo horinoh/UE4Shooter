@@ -42,7 +42,7 @@ void AShooterWeapon_Projectile::ServerSpawnProjectile_Implementation(FVector Loc
 		auto Projectile = UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ProjectileClass, Transform);
 		if (nullptr != Projectile)
 		{
-			Projectile->Instigator = Instigator;
+			Projectile->SetInstigator(GetInstigator());
 			Projectile->SetOwner(this);
 
 			UGameplayStatics::FinishSpawningActor(Projectile, Transform);

@@ -22,9 +22,6 @@
 ## [専用サーバ](https://github.com/horinoh/UE4DedicatedServer/tree/master/Document/DedicatedServer)
 
 <!--
-Edit - Editor Preference - General - Global - Derived Data - Shared を設定することによりシェーダコンパイルを共有できる
-    http://historia.co.jp/archives/9294/
-
 GenerateProjectFiles.bat で「タスククラスが見つかりません」と怒られる場合
 	VSインストーラ - 変更 - 個別のコンポーネント - コートツール - NuGetパッケージマネージャ
 
@@ -43,6 +40,7 @@ UE4初期設定でやること
         Region & Language : 言語を英語にする
         Misclleraneous - Hot Reload - Automatically Compile Newly...のチェックを外す
         Global - Derived Data - Shared Derived Data Cache : フォルダを指定する
+            シェーダコンパイルを共有できる http://historia.co.jp/archives/9294/
         Live Coding - Enable Live Codingにチェックを入れる
 -->
 

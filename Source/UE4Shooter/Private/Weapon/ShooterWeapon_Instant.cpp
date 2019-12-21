@@ -5,6 +5,8 @@
 
 #include "UnrealNetwork.h"
 
+#include "ShooterDamageType.h"
+
 void AShooterWeapon_Instant::Fire()
 {
 	const auto RandomSeed = FMath::Rand();
@@ -70,7 +72,8 @@ void AShooterWeapon_Instant::Hits(const FVector Start, const int32 RandomSeed, c
 {
 	if (HasAuthority())
 	{
-		if (nullptr != Instigator)
+		const auto Instg = GetInstigator();
+		if (nullptr != Instg)
 		{
 			//!< ¨ OnRep_FireNotify()
 			FireNotify.Origin = Start;
@@ -81,7 +84,7 @@ void AShooterWeapon_Instant::Hits(const FVector Start, const int32 RandomSeed, c
 			//!< ƒLƒƒƒ‰‚ÆŽËü‚Ì‹–—e“àÏ (‚±‚Ì’lˆÈã‚È‚çŒü‚«‚ª‡‚Á‚Ä‚¢‚é‚Æ‚Ý‚È‚·)
 			const auto AllowedDot = 0.8f - ReticleDot;
 
-			const auto ViewDir = Instigator->GetViewRotation().Vector();
+			const auto ViewDir = Instg->GetViewRotation().Vector();
 
 			for (const auto& i : HitResults)
 			{

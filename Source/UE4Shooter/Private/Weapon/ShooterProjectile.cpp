@@ -6,6 +6,8 @@
 #include "UnrealNetwork.h"
 
 #include "ShooterImpactEffect.h"
+#include "ShooterDamageType.h"
+#include "ShooterWeapon.h"
 
 AShooterProjectile::AShooterProjectile()
 {
@@ -72,7 +74,7 @@ void AShooterProjectile::PostInitializeComponents()
 
 	if (nullptr != SphereComp)
 	{
-		SphereComp->MoveIgnoreActors.Add(Instigator);
+		SphereComp->MoveIgnoreActors.Add(GetInstigator());
 	}
 	if (nullptr != ProjectileMovementComp)
 	{
@@ -130,7 +132,7 @@ void AShooterProjectile::OnRep_Exploded()
 		const auto End = Location + Forward * 150.0f;
 
 		FHitResult HitResult;
-		const FCollisionQueryParams Params(TEXT("ExplodeTag"), true, Instigator);
+		const FCollisionQueryParams Params(TEXT("ExplodeTag"), true, GetInstigator());
 		if (false == World->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel_WeaponProjectile, Params))
 		{
 			//!< ƒRƒŠƒWƒ‡ƒ“‚ªŽæ‚ê‚È‚¢ê‡‚Å‚à‚»‚ê‚Á‚Û‚¢’l‚É‚µ‚Ä‚¨‚­
