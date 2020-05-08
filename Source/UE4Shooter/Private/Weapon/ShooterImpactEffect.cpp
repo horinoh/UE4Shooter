@@ -5,7 +5,7 @@
 
 AShooterImpactEffect::AShooterImpactEffect()
 {
-	bAutoDestroyWhenFinished = true;
+	SetAutoDestroyWhenFinished(true);
 }
 
 void AShooterImpactEffect::PostInitializeComponents()
