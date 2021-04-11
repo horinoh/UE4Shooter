@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{7324D7CF-4455-1A3A-083A-6FA983F00226}",
+	"EngineAssociation": "{431CEAFE-4630-75AA-CED2-F291888428C4}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -11,7 +11,7 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"PhysicsCore",
+				"PhysicsCore"
 			]
 		}
 	],

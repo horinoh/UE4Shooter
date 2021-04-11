@@ -45,11 +45,11 @@ AShooterWeapon::AShooterWeapon()
 	}
 
 	//!< クロスヘアテクスチャ
-	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairT2D(TEXT("Texture2D'/Game/Crosshair_fps_tutorial/crosshair.crosshair'"));
-	if (CrosshairT2D.Succeeded())
-	{
-		CrosshairTexture = CrosshairT2D.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairT2D(TEXT("Texture2D'/Game/Crosshair_fps_tutorial/crosshair.crosshair'"));
+	//if (CrosshairT2D.Succeeded())
+	//{
+	//	CrosshairTexture = CrosshairT2D.Object;
+	//}
 }
 
 void AShooterWeapon::PostInitializeComponents()

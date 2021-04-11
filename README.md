@@ -8,8 +8,10 @@
     * https://www.unrealengine.com/marketplace/animation-starter-pack
 * Prototype Weapons
     * https://www.unrealengine.com/marketplace/prototype-weapons-01
-* Crosshair
-    * https://wiki.unrealengine.com/First_Person_Shooter_C%2B%2B_Tutorial
+* ~~Crosshair~~
+    * ~~https://wiki.unrealengine.com/First_Person_Shooter_C%2B%2B_Tutorial~~
+
+## Play - Net Mode - Play As Client として実行する
 
 ## [Default Class](https://github.com/horinoh/UE4Shooter/tree/master/Document/DefaultClass)
 ## [Steam](https://github.com/horinoh/UE4Steam/tree/master/)
